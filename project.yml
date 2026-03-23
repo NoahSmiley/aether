@@ -1,0 +1,49 @@
+name: Aether
+options:
+  bundleIdPrefix: me.athion
+  deploymentTarget:
+    tvOS: "18.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+
+packages:
+  Nuke:
+    url: https://github.com/kean/Nuke.git
+    from: "12.8.0"
+  NukeUI:
+    url: https://github.com/kean/Nuke.git
+    from: "12.8.0"
+  KeychainAccess:
+    url: https://github.com/kishikawakatsumi/KeychainAccess.git
+    from: "4.2.2"
+
+targets:
+  Aether:
+    type: application
+    platform: tvOS
+    sources:
+      - path: Aether
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.athion.aether
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_STRICT_CONCURRENCY: complete
+        INFOPLIST_FILE: Aether/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: "App Icon"
+        TARGETED_DEVICE_FAMILY: 3
+        CODE_SIGNING_ALLOWED: false
+      configs:
+        Debug:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+          JELLYFIN_BASE_URL: "http://192.168.0.159:8096"
+        Release:
+          JELLYFIN_BASE_URL: ""
+    dependencies:
+      - package: Nuke
+        product: Nuke
+      - package: NukeUI
+        product: NukeUI
+      - package: KeychainAccess

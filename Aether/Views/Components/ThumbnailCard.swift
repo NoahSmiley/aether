@@ -1,0 +1,163 @@
+import SwiftUI
+import NukeUI
+
+/// A 16:9 thumbnail card for Continue Watching / Next Up rows.
+/// Episode info overlaid at bottom with gradient. Thin accent-colored progress bar.
+struct ThumbnailCard: View {
+    let item: BaseItemDto
+
+    @Environment(\.isFocused) private var isFocused
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Thumbnail with overlays
+            ZStack(alignment: .bottom) {
+                LazyImage(url: thumbnailURL) { state in
+                    if let image = state.image {
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    } else if state.error != nil {
+                        placeholder
+                    } else {
+                        placeholder
+                    }
+                }
+                .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
+                .clipShape(RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius))
+
+                // Bottom gradient overlay with episode info
+                VStack(spacing: 0) {
+                    Spacer()
+
+                    ZStack(alignment: .bottomLeading) {
+                        // Gradient scrim
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0.0),
+                                .init(color: .black.opacity(0.85), location: 1.0)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(height: 80)
+
+                        // Episode / title info overlaid on gradient
+                        VStack(alignment: .leading, spacing: 2) {
+                            if item.type == .episode, let seriesName = item.seriesName {
+                                Text(seriesName)
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                            }
+
+                            Text(titleText)
+                                .font(.system(size: 18, weight: .regular))
+                                .foregroundColor(Color.white.opacity(0.8))
+                                .lineLimit(1)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 10)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius))
+
+                // Thin accent-colored progress bar at the very bottom
+                if let progress = item.userData?.progressPercent, progress > 0, progress < 1 {
+                    VStack {
+                        Spacer()
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.15))
+                                Rectangle()
+                                    .fill(AetherTheme.accent)
+                                    .frame(width: geo.size.width * min(max(progress, 0), 1))
+                            }
+                        }
+                        .frame(height: 3)
+                    }
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: AetherTheme.cardCornerRadius,
+                            bottomTrailingRadius: AetherTheme.cardCornerRadius,
+                            topTrailingRadius: 0
+                        )
+                    )
+                }
+            }
+            .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
+
+            // Show title below card only on focus for non-episode items
+            if isFocused, item.type != .episode {
+                Text(item.name ?? "Unknown")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundColor(AetherTheme.textPrimary)
+                    .lineLimit(1)
+                    .padding(.top, 8)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .frame(width: AetherTheme.thumbnailWidth)
+        .aetherFocusStyle(isFocused: isFocused)
+    }
+
+    // MARK: - Private
+
+    private var placeholder: some View {
+        RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius)
+            .fill(AetherTheme.cardSurface)
+            .overlay {
+                Image(systemName: "play.rectangle")
+                    .font(.system(size: 36))
+                    .foregroundColor(AetherTheme.textTertiary)
+            }
+    }
+
+    /// For episodes: "S2:E5 Episode Title". For movies: the movie title.
+    private var titleText: String {
+        if item.type == .episode,
+           let season = item.parentIndexNumber,
+           let episode = item.indexNumber {
+            let episodeTitle = item.name ?? ""
+            return "S\(season):E\(episode) \(episodeTitle)"
+        }
+        return item.name ?? "Unknown"
+    }
+
+    /// Prefer Thumb image, fall back to Backdrop, then Primary.
+    private var thumbnailURL: URL? {
+        if let tag = item.imageTags?["Thumb"] {
+            return ImageURLBuilder.thumbURL(
+                itemId: item.id,
+                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                tag: tag
+            )
+        }
+        if let tags = item.backdropImageTags, let tag = tags.first {
+            return ImageURLBuilder.backdropURL(
+                itemId: item.id,
+                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                tag: tag
+            )
+        }
+        if let tag = item.imageTags?["Primary"] {
+            return ImageURLBuilder.posterURL(
+                itemId: item.id,
+                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                tag: tag
+            )
+        }
+        // Fallback: try parent backdrop for episodes
+        if item.type == .episode, let seriesId = item.seriesId,
+           let tags = item.parentBackdropImageTags, let tag = tags.first {
+            return ImageURLBuilder.backdropURL(
+                itemId: seriesId,
+                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                tag: tag
+            )
+        }
+        return nil
+    }
+}
