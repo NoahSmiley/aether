@@ -40,8 +40,8 @@ struct HeroBanner: View {
                 stops: [
                     .init(color: .clear, location: 0.0),
                     .init(color: .clear, location: 0.6),
-                    .init(color: AetherTheme.deepBlack.opacity(0.5), location: 0.78),
-                    .init(color: AetherTheme.deepBlack, location: 0.95)
+                    .init(color: LumaTheme.deepBlack.opacity(0.5), location: 0.78),
+                    .init(color: LumaTheme.deepBlack, location: 0.95)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -63,8 +63,8 @@ struct HeroBanner: View {
                         }
                     }
                     .frame(
-                        maxWidth: AetherTheme.heroLogoMaxWidth,
-                        maxHeight: AetherTheme.heroLogoMaxHeight
+                        maxWidth: LumaTheme.heroLogoMaxWidth,
+                        maxHeight: LumaTheme.heroLogoMaxHeight
                     )
                 } else {
                     heroTitle(for: item)
@@ -109,7 +109,7 @@ struct HeroBanner: View {
                 .padding(.trailing, 80)
             }
         }
-        .frame(height: AetherTheme.heroBannerHeight)
+        .frame(height: LumaTheme.heroBannerHeight)
     }
 
     // MARK: - Subviews
@@ -124,7 +124,7 @@ struct HeroBanner: View {
                     .aspectRatio(contentMode: .fill)
             } else {
                 Rectangle()
-                    .fill(AetherTheme.deepBlack)
+                    .fill(LumaTheme.deepBlack)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -133,7 +133,7 @@ struct HeroBanner: View {
     @ViewBuilder
     private func heroTitle(for item: BaseItemDto) -> some View {
         Text(item.name ?? "Untitled")
-            .font(.system(size: AetherTheme.heroTitleSize, weight: .bold))
+            .font(.system(size: LumaTheme.heroTitleSize, weight: .bold))
             .foregroundColor(.white)
             .shadow(color: .black.opacity(0.7), radius: 8, y: 4)
     }

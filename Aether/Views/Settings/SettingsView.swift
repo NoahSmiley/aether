@@ -9,21 +9,21 @@ struct SettingsView: View {
         List {
             // Server section with icon
             Section {
-                HStack(spacing: AetherTheme.spacingMD) {
+                HStack(spacing: LumaTheme.spacingMD) {
                     Image(systemName: "server.rack")
                         .font(.system(size: 28))
-                        .foregroundStyle(AetherTheme.accent)
+                        .foregroundStyle(LumaTheme.accent)
                         .frame(width: 44)
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(viewModel.serverName.isEmpty ? "Jellyfin Server" : viewModel.serverName)
-                            .font(.system(size: AetherTheme.bodySize, weight: .semibold))
+                            .font(.system(size: LumaTheme.bodySize, weight: .semibold))
                             .foregroundStyle(.white)
 
                         if !viewModel.serverVersion.isEmpty {
                             Text("Version \(viewModel.serverVersion)")
-                                .font(.system(size: AetherTheme.captionSize))
-                                .foregroundStyle(AetherTheme.textSecondary)
+                                .font(.system(size: LumaTheme.captionSize))
+                                .foregroundStyle(LumaTheme.textSecondary)
                         }
                     }
                 }
@@ -31,7 +31,7 @@ struct SettingsView: View {
                 if let url = try? KeychainHelper.read(forKey: KeychainHelper.Keys.serverURL), !url.isEmpty {
                     LabeledContent {
                         Text(url)
-                            .foregroundStyle(AetherTheme.textSecondary)
+                            .foregroundStyle(LumaTheme.textSecondary)
                     } label: {
                         Label("Server URL", systemImage: "link")
                     }
@@ -45,7 +45,7 @@ struct SettingsView: View {
                 if !viewModel.userName.isEmpty {
                     LabeledContent {
                         Text(viewModel.userName)
-                            .foregroundStyle(AetherTheme.textSecondary)
+                            .foregroundStyle(LumaTheme.textSecondary)
                     } label: {
                         Label("Username", systemImage: "person.fill")
                     }
@@ -80,7 +80,7 @@ struct SettingsView: View {
             Section {
                 LabeledContent {
                     Text(appVersion)
-                        .foregroundStyle(AetherTheme.textSecondary)
+                        .foregroundStyle(LumaTheme.textSecondary)
                 } label: {
                     Label("App Version", systemImage: "info.circle")
                 }
@@ -98,7 +98,7 @@ struct SettingsView: View {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                             .font(.system(size: 22))
                         Text("Sign Out")
-                            .font(.system(size: AetherTheme.bodySize, weight: .semibold))
+                            .font(.system(size: LumaTheme.bodySize, weight: .semibold))
                         Spacer()
                     }
                     .foregroundStyle(.red)

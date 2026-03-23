@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct AetherApp: App {
+struct LumaApp: App {
     @State private var authViewModel = AuthViewModel()
 
     init() {

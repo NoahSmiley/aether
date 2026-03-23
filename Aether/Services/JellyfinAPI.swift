@@ -68,7 +68,7 @@ actor JellyfinAPI {
 
     private func authorizationHeader() -> String {
         var header = "MediaBrowser "
-        header += "Client=\"Aether\", "
+        header += "Client=\"Luma\", "
         header += "Device=\"AppleTV\", "
         header += "DeviceId=\"\(deviceId)\", "
         header += "Version=\"1.0\""

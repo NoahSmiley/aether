@@ -2,7 +2,7 @@ import Foundation
 
 enum KeychainHelper {
     private static let defaults = UserDefaults.standard
-    private static let prefix = "me.athion.aether."
+    private static let prefix = "me.athion.luma."
 
     static func save(_ value: String, forKey key: String) throws {
         defaults.set(value, forKey: prefix + key)

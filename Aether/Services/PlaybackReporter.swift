@@ -104,7 +104,7 @@ final class PlaybackReporter {
     private func startTimer() {
         stopTimer()
         timer = Timer.scheduledTimer(
-            withTimeInterval: AetherConfig.progressReportInterval,
+            withTimeInterval: LumaConfig.progressReportInterval,
             repeats: true
         ) { [weak self] _ in
             Task { @MainActor in

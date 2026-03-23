@@ -48,7 +48,7 @@ class SearchViewModel {
     private func debounceSearch() {
         debounceTask?.cancel()
         debounceTask = Task {
-            try? await Task.sleep(for: .seconds(AetherConfig.searchDebounceInterval))
+            try? await Task.sleep(for: .seconds(LumaConfig.searchDebounceInterval))
             guard !Task.isCancelled else { return }
             await search()
         }

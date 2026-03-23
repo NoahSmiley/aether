@@ -18,7 +18,7 @@ struct AccentButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AetherTheme.spacingSM) {
+            HStack(spacing: LumaTheme.spacingSM) {
                 if let icon {
                     Image(systemName: icon)
                         .font(.system(size: 24, weight: .bold))

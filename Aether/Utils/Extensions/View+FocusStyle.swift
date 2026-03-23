@@ -1,12 +1,12 @@
 import SwiftUI
 
 extension View {
-    func aetherFocusStyle(isFocused: Bool) -> some View {
+    func lumaFocusStyle(isFocused: Bool) -> some View {
         self
-            .scaleEffect(isFocused ? AetherTheme.focusScale : 1.0)
+            .scaleEffect(isFocused ? LumaTheme.focusScale : 1.0)
             .shadow(
-                color: AetherTheme.accent.opacity(isFocused ? 0.35 : 0),
-                radius: isFocused ? AetherTheme.focusShadowRadius : 0
+                color: LumaTheme.accent.opacity(isFocused ? 0.35 : 0),
+                radius: isFocused ? LumaTheme.focusShadowRadius : 0
             )
             .shadow(
                 color: .black.opacity(isFocused ? 0.6 : 0),

@@ -7,205 +7,189 @@ struct LiveTVView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: 0) {
-                // Sports & NFL
-                if !viewModel.sportsPrograms.isEmpty {
-                    programRow(title: "Sports & NFL", items: viewModel.sportsPrograms)
-                        .padding(.bottom, AetherTheme.spacingXXL)
-                }
+                if viewModel.isLoading {
+                    SkeletonRow()
+                        .padding(.bottom, LumaTheme.spacingXXL)
+                    SkeletonRow()
+                        .padding(.bottom, LumaTheme.spacingXXL)
+                } else if !viewModel.sportsChannels.isEmpty || !viewModel.nflChannels.isEmpty || !viewModel.golfChannels.isEmpty {
+                    if !viewModel.nflChannels.isEmpty {
+                        channelRow(title: "NFL", icon: "football", channels: viewModel.nflChannels)
+                            .padding(.bottom, LumaTheme.spacingXXL)
+                    }
 
-                // Now Airing
-                if !viewModel.nowAiring.isEmpty {
-                    programRow(title: "Live Now", items: viewModel.nowAiring)
-                        .padding(.bottom, AetherTheme.spacingXXL)
-                }
+                    if !viewModel.golfChannels.isEmpty {
+                        channelRow(title: "Golf", icon: "figure.golf", channels: viewModel.golfChannels)
+                            .padding(.bottom, LumaTheme.spacingXXL)
+                    }
 
-                // All Channels
-                if !viewModel.channels.isEmpty {
-                    channelsRow
-                        .padding(.bottom, AetherTheme.spacingXXL)
+                    if !viewModel.sportsChannels.isEmpty {
+                        channelRow(title: "Sports", icon: "sportscourt", channels: viewModel.sportsChannels)
+                            .padding(.bottom, LumaTheme.spacingXXL)
+                    }
+                } else {
+                    VStack(spacing: 16) {
+                        Spacer().frame(height: 150)
+                        Image(systemName: "tv.slash")
+                            .font(.system(size: 60, weight: .thin))
+                            .foregroundColor(LumaTheme.textTertiary)
+                        Text("No live channels right now")
+                            .font(.system(size: 28, weight: .medium))
+                            .foregroundColor(LumaTheme.textSecondary)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
 
                 Spacer()
-                    .frame(height: AetherTheme.spacingHuge)
+                    .frame(height: LumaTheme.spacingHuge)
             }
         }
-        .background(AetherTheme.deepBlack)
+        .background(LumaTheme.deepBlack)
         .navigationTitle("Live TV")
         .task {
             await viewModel.loadAll()
         }
     }
 
-    // MARK: - Program Row
+    // MARK: - Channel Row
 
     @ViewBuilder
-    private func programRow(title: String, items: [MockProgram]) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
-            Text(title)
-                .font(.system(size: 32, weight: .bold))
-                .foregroundStyle(AetherTheme.textPrimary)
-                .padding(.leading, 50)
+    private func channelRow(title: String, icon: String, channels: [LiveChannel]) -> some View {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(LumaTheme.textPrimary)
+                Text(title)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundStyle(LumaTheme.textPrimary)
+            }
+            .padding(.leading, 50)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 25) {
-                    ForEach(items) { program in
-                        ProgramCard(program: program)
+                    ForEach(channels) { channel in
+                        LiveChannelCard(channel: channel, viewModel: viewModel)
                     }
                 }
                 .padding(.leading, 50)
                 .padding(.trailing, 60)
-                .padding(.vertical, AetherTheme.spacingLG)
-            }
-            .scrollClipDisabled()
-        }
-    }
-
-    // MARK: - Channels Row
-
-    private var channelsRow: some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
-            Text("All Channels")
-                .font(.system(size: 32, weight: .bold))
-                .foregroundStyle(AetherTheme.textPrimary)
-                .padding(.leading, 50)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 20) {
-                    ForEach(viewModel.channels) { channel in
-                        ChannelCard(channel: channel)
-                    }
-                }
-                .padding(.leading, 50)
-                .padding(.trailing, 60)
-                .padding(.vertical, AetherTheme.spacingLG)
+                .padding(.vertical, LumaTheme.spacingLG)
             }
             .scrollClipDisabled()
         }
     }
 }
 
-// MARK: - Program Card
+// MARK: - Live Channel Card
 
-struct ProgramCard: View {
-    let program: MockProgram
+struct LiveChannelCard: View {
+    let channel: LiveChannel
+    let viewModel: LiveTVViewModel
 
-    @Environment(\.isFocused) private var isFocused
+    @State private var isShowingPlayer = false
 
     var body: some View {
-        Button { } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                // Thumbnail area with gradient and icon
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                isShowingPlayer = true
+            } label: {
                 ZStack(alignment: .topLeading) {
-                    // Background with sport-appropriate gradient
-                    RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius)
+                    RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius)
                         .fill(
                             LinearGradient(
-                                colors: [Color.white.opacity(0.08), Color.white.opacity(0.03)],
+                                colors: [Color.white.opacity(0.10), Color.white.opacity(0.03)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                         .overlay {
-                            Image(systemName: program.systemIcon)
-                                .font(.system(size: 48, weight: .light))
-                                .foregroundColor(.white.opacity(0.12))
+                            if let iconURL = channel.stream.streamIcon,
+                               !iconURL.isEmpty,
+                               let url = URL(string: iconURL) {
+                                LazyImage(url: url) { state in
+                                    if let image = state.image {
+                                        image
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 100, height: 100)
+                                    } else {
+                                        Image(systemName: "play.tv.fill")
+                                            .font(.system(size: 40, weight: .light))
+                                            .foregroundColor(.white.opacity(0.15))
+                                    }
+                                }
+                            } else {
+                                Image(systemName: "play.tv.fill")
+                                    .font(.system(size: 40, weight: .light))
+                                    .foregroundColor(.white.opacity(0.15))
+                            }
                         }
-                        .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
+                        .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
 
-                    // LIVE badge
-                    if program.isLive {
+                    // ON NOW badge
+                    if !channel.startTime.isEmpty {
                         HStack(spacing: 5) {
                             Circle()
-                                .fill(.red)
+                                .fill(.green)
                                 .frame(width: 7, height: 7)
-                            Text("LIVE")
-                                .font(.system(size: 13, weight: .bold))
+                            Text("ON NOW")
+                                .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(.white)
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(.red.opacity(0.9))
+                        .background(.green.opacity(0.8))
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding(10)
                     }
 
-                    // Channel label bottom-right
-                    VStack {
-                        Spacer()
-                        HStack {
+                    // Time range bottom-right
+                    if !channel.startTime.isEmpty {
+                        VStack {
                             Spacer()
-                            Text(program.channelName)
-                                .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(.white.opacity(0.7))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(Color.black.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                .padding(10)
+                            HStack {
+                                Spacer()
+                                Text("\(channel.startTime) - \(channel.endTime)")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 4)
+                                    .background(Color.black.opacity(0.5))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    .padding(10)
+                            }
                         }
-                    }
-                    .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
-                }
-
-                // Info below
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(program.name)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(AetherTheme.textPrimary)
-                        .lineLimit(1)
-
-                    Text(program.subtitle)
-                        .font(.system(size: 17, weight: .regular))
-                        .foregroundColor(AetherTheme.textSecondary)
-                        .lineLimit(1)
-                }
-                .padding(.top, 8)
-            }
-            .frame(width: AetherTheme.thumbnailWidth)
-        }
-        .buttonStyle(.card)
-    }
-}
-
-// MARK: - Channel Card
-
-struct ChannelCard: View {
-    let channel: MockChannel
-
-    var body: some View {
-        Button { } label: {
-            VStack(spacing: 6) {
-                // Channel icon
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.white.opacity(0.06))
-                        .frame(width: 140, height: 90)
-
-                    VStack(spacing: 4) {
-                        Image(systemName: channel.systemIcon)
-                            .font(.system(size: 26))
-                            .foregroundColor(.white.opacity(0.5))
-
-                        Text(channel.number)
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white.opacity(0.6))
+                        .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
                     }
                 }
+            }
+            .buttonStyle(.card)
 
-                // Channel name
-                Text(channel.name)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(AetherTheme.textPrimary)
+            // Program info
+            VStack(alignment: .leading, spacing: 3) {
+                Text(channel.programTitle)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(LumaTheme.textPrimary)
                     .lineLimit(1)
 
-                // Current program
-                Text(channel.currentProgram)
-                    .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(AetherTheme.textTertiary)
+                Text(channel.channelName)
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundColor(LumaTheme.textSecondary)
                     .lineLimit(1)
             }
-            .frame(width: 140)
+            .padding(.top, 10)
+            .padding(.leading, 5)
+            .frame(width: LumaTheme.thumbnailWidth, alignment: .leading)
         }
-        .buttonStyle(.card)
+        .frame(width: LumaTheme.thumbnailWidth)
+        .fullScreenCover(isPresented: $isShowingPlayer) {
+            if let url = viewModel.streamURL(for: channel.stream) {
+                LiveStreamPlayerView(
+                    streamName: channel.channelName,
+                    streamURL: url
+                )
+            }
+        }
     }
 }

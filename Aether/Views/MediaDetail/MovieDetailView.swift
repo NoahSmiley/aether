@@ -15,7 +15,7 @@ struct MovieDetailView: View {
                 headerSection
 
                 // Content below the hero
-                VStack(alignment: .leading, spacing: AetherTheme.spacingXL) {
+                VStack(alignment: .leading, spacing: LumaTheme.spacingXL) {
                     // Action buttons
                     actionButtons
 
@@ -39,11 +39,11 @@ struct MovieDetailView: View {
                         moreLikeThisSection
                     }
                 }
-                .padding(.top, AetherTheme.spacingLG)
-                .padding(.bottom, AetherTheme.spacingHuge)
+                .padding(.top, LumaTheme.spacingLG)
+                .padding(.bottom, LumaTheme.spacingHuge)
             }
         }
-        .background(AetherTheme.deepBlack)
+        .background(LumaTheme.deepBlack)
         .navigationDestination(for: String.self) { itemId in
             DetailView(itemId: itemId)
         }
@@ -64,7 +64,7 @@ struct MovieDetailView: View {
                         .aspectRatio(contentMode: .fill)
                 } else {
                     Rectangle()
-                        .fill(AetherTheme.deepBlack)
+                        .fill(LumaTheme.deepBlack)
                 }
             }
             .frame(height: 700)
@@ -75,7 +75,7 @@ struct MovieDetailView: View {
                 // Top vignette (subtle)
                 LinearGradient(
                     stops: [
-                        .init(color: AetherTheme.deepBlack.opacity(0.3), location: 0),
+                        .init(color: LumaTheme.deepBlack.opacity(0.3), location: 0),
                         .init(color: .clear, location: 0.3)
                     ],
                     startPoint: .top,
@@ -89,8 +89,8 @@ struct MovieDetailView: View {
                 LinearGradient(
                     stops: [
                         .init(color: .clear, location: 0),
-                        .init(color: AetherTheme.deepBlack.opacity(0.6), location: 0.3),
-                        .init(color: AetherTheme.deepBlack, location: 0.85)
+                        .init(color: LumaTheme.deepBlack.opacity(0.6), location: 0.3),
+                        .init(color: LumaTheme.deepBlack, location: 0.85)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
@@ -101,7 +101,7 @@ struct MovieDetailView: View {
             // Left gradient for text legibility
             LinearGradient(
                 stops: [
-                    .init(color: AetherTheme.deepBlack.opacity(0.6), location: 0),
+                    .init(color: LumaTheme.deepBlack.opacity(0.6), location: 0),
                     .init(color: .clear, location: 0.4)
                 ],
                 startPoint: .leading,
@@ -147,14 +147,14 @@ struct MovieDetailView: View {
         HStack(spacing: 14) {
             if let year = item.productionYear {
                 Text(String(year))
-                    .font(.system(size: AetherTheme.captionSize, weight: .medium))
-                    .foregroundStyle(AetherTheme.textSecondary)
+                    .font(.system(size: LumaTheme.captionSize, weight: .medium))
+                    .foregroundStyle(LumaTheme.textSecondary)
             }
 
             if let rating = item.officialRating {
                 Text(rating)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(AetherTheme.textPrimary)
+                    .foregroundStyle(LumaTheme.textPrimary)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
                     .background(Color.white.opacity(0.15))
@@ -167,8 +167,8 @@ struct MovieDetailView: View {
 
             if let ticks = item.runTimeTicks {
                 Text(ticks.asDuration)
-                    .font(.system(size: AetherTheme.captionSize))
-                    .foregroundStyle(AetherTheme.textSecondary)
+                    .font(.system(size: LumaTheme.captionSize))
+                    .foregroundStyle(LumaTheme.textSecondary)
             }
 
             if let rating = item.communityRating {
@@ -177,7 +177,7 @@ struct MovieDetailView: View {
                         .font(.system(size: 18))
                         .foregroundStyle(.yellow)
                     Text(String(format: "%.1f", rating))
-                        .font(.system(size: AetherTheme.captionSize, weight: .semibold))
+                        .font(.system(size: LumaTheme.captionSize, weight: .semibold))
                         .foregroundStyle(.white)
                 }
             }
@@ -187,7 +187,7 @@ struct MovieDetailView: View {
     // MARK: - Action Buttons
 
     private var actionButtons: some View {
-        HStack(spacing: AetherTheme.spacingLG) {
+        HStack(spacing: LumaTheme.spacingLG) {
             // Play button — white filled, play triangle icon
             AccentButton(title: playButtonTitle, icon: "play.fill", style: .primary) {
                 playbackItem = item
@@ -208,7 +208,7 @@ struct MovieDetailView: View {
             } label: {
                 Image(systemName: item.userData?.played == true ? "checkmark.circle.fill" : "checkmark.circle")
                     .font(.system(size: 30))
-                    .foregroundStyle(item.userData?.played == true ? AetherTheme.accent : AetherTheme.textTertiary)
+                    .foregroundStyle(item.userData?.played == true ? LumaTheme.accent : LumaTheme.textTertiary)
                     .frame(width: 60, height: 60)
                     .background(Color.white.opacity(0.08))
                     .clipShape(Circle())
@@ -231,10 +231,10 @@ struct MovieDetailView: View {
     // MARK: - Synopsis with "more" expansion
 
     private func synopsisSection(_ text: String) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
             Text(text)
                 .font(.system(size: 26))
-                .foregroundStyle(AetherTheme.textSecondary)
+                .foregroundStyle(LumaTheme.textSecondary)
                 .lineLimit(showFullOverview ? nil : 3)
                 .frame(maxWidth: 900, alignment: .leading)
 
@@ -245,7 +245,7 @@ struct MovieDetailView: View {
                     }
                 } label: {
                     Text(showFullOverview ? "Show less" : "More")
-                        .font(.system(size: AetherTheme.captionSize, weight: .semibold))
+                        .font(.system(size: LumaTheme.captionSize, weight: .semibold))
                         .foregroundStyle(.white)
                 }
                 .buttonStyle(.plain)
@@ -262,7 +262,7 @@ struct MovieDetailView: View {
                 ForEach(genres, id: \.self) { genre in
                     Text(genre)
                         .font(.system(size: 21, weight: .medium))
-                        .foregroundStyle(AetherTheme.textSecondary)
+                        .foregroundStyle(LumaTheme.textSecondary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
                         .background(Color.white.opacity(0.08))
@@ -279,10 +279,10 @@ struct MovieDetailView: View {
     // MARK: - Cast (Circular Headshots)
 
     private func castSection(people: [PersonInfo]) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingMD) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingMD) {
             Text("Cast & Crew")
                 .font(.system(size: 31, weight: .semibold))
-                .foregroundStyle(AetherTheme.textPrimary)
+                .foregroundStyle(LumaTheme.textPrimary)
                 .padding(.leading, 80)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -292,7 +292,7 @@ struct MovieDetailView: View {
                     }
                 }
                 .padding(.horizontal, 80)
-                .padding(.vertical, AetherTheme.spacingSM)
+                .padding(.vertical, LumaTheme.spacingSM)
             }
         }
     }
@@ -300,10 +300,10 @@ struct MovieDetailView: View {
     // MARK: - More Like This
 
     private var moreLikeThisSection: some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingMD) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingMD) {
             Text("More Like This")
                 .font(.system(size: 31, weight: .semibold))
-                .foregroundStyle(AetherTheme.textPrimary)
+                .foregroundStyle(LumaTheme.textPrimary)
                 .padding(.leading, 80)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -317,7 +317,7 @@ struct MovieDetailView: View {
                 }
                 .padding(.leading, 80)
                 .padding(.trailing, 40)
-                .padding(.vertical, AetherTheme.spacingXL)
+                .padding(.vertical, LumaTheme.spacingXL)
             }
             .scrollClipDisabled()
         }

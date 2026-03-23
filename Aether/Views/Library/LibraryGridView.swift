@@ -9,7 +9,7 @@ struct LibraryGridView: View {
     @State private var viewModel: LibraryViewModel
 
     private let columns = [
-        GridItem(.adaptive(minimum: AetherTheme.posterWidth + 20), spacing: 30)
+        GridItem(.adaptive(minimum: LumaTheme.posterWidth + 20), spacing: 30)
     ]
 
     init(parentId: String?, includeTypes: [String]?, title: String) {
@@ -24,7 +24,7 @@ struct LibraryGridView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: AetherTheme.spacingLG) {
+            LazyVStack(alignment: .leading, spacing: LumaTheme.spacingLG) {
                 // Sort/filter controls
                 sortControls
 
@@ -48,22 +48,22 @@ struct LibraryGridView: View {
                     .padding(.horizontal, 50)
 
                     if viewModel.isLoadingMore {
-                        HStack(spacing: AetherTheme.spacingMD) {
+                        HStack(spacing: LumaTheme.spacingMD) {
                             ProgressView()
-                                .tint(AetherTheme.textTertiary)
+                                .tint(LumaTheme.textTertiary)
                             Text("Loading more...")
-                                .font(.system(size: AetherTheme.captionSize))
-                                .foregroundStyle(AetherTheme.textTertiary)
+                                .font(.system(size: LumaTheme.captionSize))
+                                .foregroundStyle(LumaTheme.textTertiary)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, AetherTheme.spacingXL)
+                        .padding(.vertical, LumaTheme.spacingXL)
                         .transition(.opacity)
                     }
                 }
             }
-            .padding(.bottom, AetherTheme.spacingXXL)
+            .padding(.bottom, LumaTheme.spacingXXL)
         }
-        .background(AetherTheme.deepBlack)
+        .background(LumaTheme.deepBlack)
         .navigationTitle(title)
         .navigationDestination(for: String.self) { itemId in
             DetailView(itemId: itemId)
@@ -78,25 +78,25 @@ struct LibraryGridView: View {
     // MARK: - Loading / Error States
 
     private var loadingView: some View {
-        VStack(spacing: AetherTheme.spacingMD) {
+        VStack(spacing: LumaTheme.spacingMD) {
             ProgressView()
                 .tint(.white)
                 .scaleEffect(1.5)
             Text("Loading...")
-                .font(.system(size: AetherTheme.captionSize))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .font(.system(size: LumaTheme.captionSize))
+                .foregroundStyle(LumaTheme.textTertiary)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
     }
 
     private func errorView(_ error: String) -> some View {
-        VStack(spacing: AetherTheme.spacingMD) {
+        VStack(spacing: LumaTheme.spacingMD) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .foregroundStyle(LumaTheme.textTertiary)
             Text(error)
                 .foregroundStyle(.red)
-                .font(.system(size: AetherTheme.bodySize))
+                .font(.system(size: LumaTheme.bodySize))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
@@ -105,7 +105,7 @@ struct LibraryGridView: View {
     // MARK: - Sort Controls
 
     private var sortControls: some View {
-        HStack(spacing: AetherTheme.spacingSM) {
+        HStack(spacing: LumaTheme.spacingSM) {
             Spacer()
 
             Menu {
@@ -118,9 +118,9 @@ struct LibraryGridView: View {
                     Image(systemName: "arrow.up.arrow.down")
                         .font(.system(size: 18))
                     Text(sortLabel)
-                        .font(.system(size: AetherTheme.captionSize, weight: .medium))
+                        .font(.system(size: LumaTheme.captionSize, weight: .medium))
                 }
-                .foregroundStyle(AetherTheme.textSecondary)
+                .foregroundStyle(LumaTheme.textSecondary)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
                 .background(Color.white.opacity(0.06))
@@ -136,7 +136,7 @@ struct LibraryGridView: View {
             } label: {
                 Image(systemName: viewModel.sortOrder == "Ascending" ? "arrow.up" : "arrow.down")
                     .font(.system(size: 20))
-                    .foregroundStyle(AetherTheme.textSecondary)
+                    .foregroundStyle(LumaTheme.textSecondary)
                     .frame(width: 44, height: 44)
                     .background(Color.white.opacity(0.06))
                     .clipShape(Circle())
@@ -147,7 +147,7 @@ struct LibraryGridView: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 50)
-        .padding(.top, AetherTheme.spacingMD)
+        .padding(.top, LumaTheme.spacingMD)
     }
 
     private var sortLabel: String {

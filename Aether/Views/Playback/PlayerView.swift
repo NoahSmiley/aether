@@ -52,8 +52,8 @@ struct PlayerView: View {
 
                 // Time indicator
                 Text("You stopped at \(formatTime(viewModel.resumePositionTicks))")
-                    .font(.system(size: AetherTheme.bodySize))
-                    .foregroundStyle(AetherTheme.textSecondary)
+                    .font(.system(size: LumaTheme.bodySize))
+                    .foregroundStyle(LumaTheme.textSecondary)
 
                 // Two clear buttons
                 HStack(spacing: 32) {

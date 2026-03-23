@@ -78,7 +78,7 @@ class HomeViewModel {
         stopHeroTimer()
         guard heroItems.count > 1 else { return }
 
-        heroTimer = Timer.scheduledTimer(withTimeInterval: AetherConfig.heroBannerInterval, repeats: true) { [weak self] _ in
+        heroTimer = Timer.scheduledTimer(withTimeInterval: LumaConfig.heroBannerInterval, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self, !self.heroItems.isEmpty else { return }
                 withAnimation(.easeInOut(duration: 0.8)) {

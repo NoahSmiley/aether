@@ -1,80 +1,211 @@
 import SwiftUI
 
-@MainActor
-@Observable
-class LiveTVViewModel {
-    var channels: [MockChannel] = []
-    var nowAiring: [MockProgram] = []
-    var sportsPrograms: [MockProgram] = []
-    var isLoading = false
+/// Quality metadata for a channel
+enum StreamQuality: String {
+    case uhd4K = "4K"
+    case fhd = "1080p"
+    case hd = "720p"
+    case sd = "SD"
 
-    func loadAll() async {
-        isLoading = true
-
-        // Use mock data for now — replace with real API calls when tuner is configured
-        channels = MockChannel.allChannels
-        nowAiring = MockProgram.nowAiring
-        sportsPrograms = MockProgram.sports
-
-        isLoading = false
+    var color: Color {
+        switch self {
+        case .uhd4K: return .purple
+        case .fhd: return .blue
+        case .hd: return .green
+        case .sd: return .gray
+        }
     }
 }
 
-// MARK: - Mock Data Models
+/// A stream paired with its current EPG program info and quality
+struct LiveChannel: Identifiable {
+    let stream: XtreamStream
+    let programTitle: String
+    let programDescription: String
+    let startTime: String
+    let endTime: String
+    let quality: StreamQuality
+    let is60fps: Bool
 
-struct MockChannel: Identifiable {
-    let id: String
-    let name: String
-    let number: String
-    let currentProgram: String
-    let systemIcon: String
+    var id: Int { stream.streamId }
 
-    static let allChannels: [MockChannel] = [
-        MockChannel(id: "espn", name: "ESPN", number: "206", currentProgram: "SportsCenter", systemIcon: "sportscourt"),
-        MockChannel(id: "espn2", name: "ESPN2", number: "209", currentProgram: "First Take", systemIcon: "sportscourt"),
-        MockChannel(id: "nfl", name: "NFL Network", number: "212", currentProgram: "NFL Total Access", systemIcon: "football"),
-        MockChannel(id: "fox-sports", name: "FOX Sports 1", number: "219", currentProgram: "NASCAR Race Hub", systemIcon: "flag.checkered"),
-        MockChannel(id: "nba-tv", name: "NBA TV", number: "216", currentProgram: "NBA GameTime", systemIcon: "basketball"),
-        MockChannel(id: "mlb", name: "MLB Network", number: "213", currentProgram: "MLB Tonight", systemIcon: "baseball"),
-        MockChannel(id: "tnt", name: "TNT", number: "245", currentProgram: "Inside the NBA", systemIcon: "tv"),
-        MockChannel(id: "cbs-sports", name: "CBS Sports", number: "221", currentProgram: "CBS Sports HQ", systemIcon: "sportscourt"),
-        MockChannel(id: "fox", name: "FOX", number: "5", currentProgram: "The Masked Singer", systemIcon: "tv"),
-        MockChannel(id: "abc", name: "ABC", number: "7", currentProgram: "The Bachelor", systemIcon: "tv"),
-        MockChannel(id: "nbc", name: "NBC", number: "4", currentProgram: "The Voice", systemIcon: "tv"),
-        MockChannel(id: "cbs", name: "CBS", number: "2", currentProgram: "NCIS", systemIcon: "tv"),
-        MockChannel(id: "hbo", name: "HBO", number: "501", currentProgram: "The Last of Us", systemIcon: "play.tv"),
-        MockChannel(id: "showtime", name: "Showtime", number: "545", currentProgram: "Billions", systemIcon: "play.tv"),
-        MockChannel(id: "cnn", name: "CNN", number: "200", currentProgram: "CNN Newsroom", systemIcon: "newspaper"),
-        MockChannel(id: "discovery", name: "Discovery", number: "278", currentProgram: "Gold Rush", systemIcon: "globe"),
-    ]
+    var channelName: String {
+        var name = stream.name
+        if let range = name.range(of: #"^[A-Z0-9]{2,3}\|\s*"#, options: .regularExpression) {
+            name.removeSubrange(range)
+        }
+        // Clean up quality tags from display name
+        for tag in [" HD", " FHD", " SD", " UHD", " ᴴᴰ ⁶⁰ᶠᵖˢ", " ᴴᴰ ²⁵ᶠᵖˢ", " ᴴᴰ", " UHD/4K"] {
+            name = name.replacingOccurrences(of: tag, with: "")
+        }
+        return name.trimmingCharacters(in: .whitespaces)
+    }
 }
 
-struct MockProgram: Identifiable {
-    let id: String
-    let name: String
-    let channelName: String
-    let channelNumber: String
-    let subtitle: String
-    let isLive: Bool
-    let systemIcon: String
+@MainActor
+@Observable
+class LiveTVViewModel {
+    var sportsChannels: [LiveChannel] = []
+    var nflChannels: [LiveChannel] = []
+    var golfChannels: [LiveChannel] = []
+    var isLoading = false
+    var error: String?
 
-    static let nowAiring: [MockProgram] = [
-        MockProgram(id: "p1", name: "SportsCenter", channelName: "ESPN", channelNumber: "206", subtitle: "Top plays and highlights", isLive: true, systemIcon: "sportscourt"),
-        MockProgram(id: "p2", name: "The Last of Us", channelName: "HBO", channelNumber: "501", subtitle: "S2 E4 — \"Ellie\"", isLive: true, systemIcon: "play.tv"),
-        MockProgram(id: "p3", name: "CNN Newsroom", channelName: "CNN", channelNumber: "200", subtitle: "Breaking news coverage", isLive: true, systemIcon: "newspaper"),
-        MockProgram(id: "p4", name: "The Voice", channelName: "NBC", channelNumber: "4", subtitle: "Blind Auditions — Part 3", isLive: true, systemIcon: "music.mic"),
-        MockProgram(id: "p5", name: "Gold Rush", channelName: "Discovery", channelNumber: "278", subtitle: "S14 E8 — \"Parker's Gamble\"", isLive: true, systemIcon: "globe"),
-        MockProgram(id: "p6", name: "NCIS", channelName: "CBS", channelNumber: "2", subtitle: "S22 E12 — \"Cold Case\"", isLive: true, systemIcon: "tv"),
+    private let api = XtreamAPI.shared
+
+    // Channel definitions: (streamId, quality, is60fps)
+    private let sportsChannelDefs: [(Int, StreamQuality, Bool)] = [
+        (1921356, .fhd, true),   // ESPN ᴴᴰ ⁶⁰ᶠᵖˢ
+        (1921353, .fhd, true),   // ESPN 2 ᴴᴰ ⁶⁰ᶠᵖˢ
+        (1921360, .fhd, true),   // ESPN NEWS ᴴᴰ ⁶⁰ᶠᵖˢ
+        (1921359, .fhd, true),   // ESPN U ᴴᴰ ⁶⁰ᶠᵖˢ
+        (45601,   .hd,  false),  // CBS SPORTS NETWORK HD
+        (234677,  .hd,  false),  // NBC SPORTS NETWORK
+        (45571,   .hd,  false),  // FOX SPORTS 1 HD
+        (45570,   .hd,  false),  // FOX SPORTS 2 HD
+        (1481941, .uhd4K, true), // ESPN UHD 4K
     ]
 
-    static let sports: [MockProgram] = [
-        MockProgram(id: "s1", name: "NFL: Cowboys vs Eagles", channelName: "ESPN", channelNumber: "206", subtitle: "NFC East Rivalry — 4th Quarter", isLive: true, systemIcon: "football"),
-        MockProgram(id: "s2", name: "NBA: Lakers vs Celtics", channelName: "TNT", channelNumber: "245", subtitle: "3rd Quarter — LAL 78, BOS 82", isLive: true, systemIcon: "basketball"),
-        MockProgram(id: "s3", name: "NFL RedZone", channelName: "NFL Network", channelNumber: "212", subtitle: "Every touchdown, every game", isLive: true, systemIcon: "football"),
-        MockProgram(id: "s4", name: "UEFA Champions League", channelName: "CBS Sports", channelNumber: "221", subtitle: "Real Madrid vs Man City", isLive: true, systemIcon: "soccerball"),
-        MockProgram(id: "s5", name: "MLB: Yankees vs Red Sox", channelName: "MLB Network", channelNumber: "213", subtitle: "Top of the 6th", isLive: true, systemIcon: "baseball"),
-        MockProgram(id: "s6", name: "NASCAR Cup Series", channelName: "FOX Sports 1", channelNumber: "219", subtitle: "Daytona 500 — Lap 142/200", isLive: true, systemIcon: "flag.checkered"),
-        MockProgram(id: "s7", name: "NHL: Rangers vs Bruins", channelName: "ESPN2", channelNumber: "209", subtitle: "2nd Period — NYR 2, BOS 1", isLive: true, systemIcon: "hockey.puck"),
-        MockProgram(id: "s8", name: "March Madness", channelName: "CBS", channelNumber: "2", subtitle: "Sweet 16 — Duke vs Houston", isLive: true, systemIcon: "basketball"),
+    private let nflChannelDefs: [(Int, StreamQuality, Bool)] = [
+        (45526, .hd, false),  // NFL NETWORK HD
+        (45524, .hd, false),  // NFL REDZONE HD
     ]
+
+    private let golfChannelDefs: [(Int, StreamQuality, Bool)] = [
+        (45554, .sd,  false),  // GOLF CHANNEL (540p)
+        (45532, .sd,  false),  // NBC GOLF
+    ]
+
+    private var qualityMap: [Int: (StreamQuality, Bool)] = [:]
+
+    func loadAll() async {
+        isLoading = true
+        error = nil
+
+        // Build quality lookup
+        for (id, quality, fps60) in sportsChannelDefs + nflChannelDefs + golfChannelDefs {
+            qualityMap[id] = (quality, fps60)
+        }
+
+        let allIds = Set((sportsChannelDefs + nflChannelDefs + golfChannelDefs).map(\.0))
+
+        do {
+            async let sportsResult = api.getLiveStreams(categoryId: "680")
+            async let espnResult = api.getLiveStreams(categoryId: "2232")
+            async let nflResult = api.getLiveStreams(categoryId: "675")
+            async let uhd4kResult = api.getLiveStreams(categoryId: "1673")
+
+            let all = try await sportsResult + espnResult + nflResult + uhd4kResult
+            let wanted = all.filter { allIds.contains($0.streamId) }
+
+            let sportsIds = Set(sportsChannelDefs.map(\.0))
+            let nflIds = Set(nflChannelDefs.map(\.0))
+            let golfIds = Set(golfChannelDefs.map(\.0))
+
+            let wantedSports = wanted.filter { sportsIds.contains($0.streamId) }
+            let wantedNfl = wanted.filter { nflIds.contains($0.streamId) }
+            let wantedGolf = wanted.filter { golfIds.contains($0.streamId) }
+
+            async let sportsLive = loadLiveChannels(wantedSports)
+            async let nflLive = loadLiveChannels(wantedNfl)
+            async let golfLive = loadLiveChannels(wantedGolf)
+
+            sportsChannels = await sportsLive
+            nflChannels = await nflLive
+            golfChannels = await golfLive
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isLoading = false
+    }
+
+    func streamURL(for stream: XtreamStream) -> URL? {
+        api.streamURL(for: stream.streamId)
+    }
+
+    // MARK: - EPG
+
+    private func loadLiveChannels(_ streams: [XtreamStream]) async -> [LiveChannel] {
+        await withTaskGroup(of: LiveChannel?.self) { group in
+            for stream in streams {
+                group.addTask {
+                    await self.checkEPG(for: stream)
+                }
+            }
+
+            var results: [(LiveChannel, Int)] = []
+            for await channel in group {
+                if let channel,
+                   let idx = streams.firstIndex(where: { $0.streamId == channel.stream.streamId }) {
+                    results.append((channel, idx))
+                }
+            }
+            return results.sorted(by: { $0.1 < $1.1 }).map(\.0)
+        }
+    }
+
+    private func checkEPG(for stream: XtreamStream) async -> LiveChannel? {
+        let (quality, is60fps) = qualityMap[stream.streamId] ?? (.hd, false)
+
+        do {
+            let epg = try await api.getEPG(streamId: stream.streamId)
+            guard !epg.isEmpty else {
+                return makeFallbackChannel(stream, quality: quality, is60fps: is60fps)
+            }
+
+            let now = Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            formatter.timeZone = TimeZone(identifier: "Europe/Amsterdam")
+
+            for entry in epg {
+                guard let start = formatter.date(from: entry.start),
+                      let end = formatter.date(from: entry.end) else { continue }
+
+                if start <= now && end > now {
+                    let displayFormatter = DateFormatter()
+                    displayFormatter.dateFormat = "h:mm a"
+                    displayFormatter.timeZone = .current
+
+                    return LiveChannel(
+                        stream: stream,
+                        programTitle: entry.decodedTitle,
+                        programDescription: entry.decodedDescription,
+                        startTime: displayFormatter.string(from: start),
+                        endTime: displayFormatter.string(from: end),
+                        quality: quality,
+                        is60fps: is60fps
+                    )
+                }
+            }
+
+            return makeFallbackChannel(stream, quality: quality, is60fps: is60fps)
+        } catch {
+            return makeFallbackChannel(stream, quality: quality, is60fps: is60fps)
+        }
+    }
+
+    private func makeFallbackChannel(_ stream: XtreamStream, quality: StreamQuality, is60fps: Bool) -> LiveChannel {
+        LiveChannel(
+            stream: stream,
+            programTitle: cleanName(stream.name),
+            programDescription: "",
+            startTime: "",
+            endTime: "",
+            quality: quality,
+            is60fps: is60fps
+        )
+    }
+
+    private func cleanName(_ name: String) -> String {
+        var n = name
+        if let range = n.range(of: #"^[A-Z0-9]{2,3}\|\s*"#, options: .regularExpression) {
+            n.removeSubrange(range)
+        }
+        for tag in [" HD", " FHD", " SD", " UHD", " ᴴᴰ ⁶⁰ᶠᵖˢ", " ᴴᴰ ²⁵ᶠᵖˢ", " ᴴᴰ", " UHD/4K"] {
+            n = n.replacingOccurrences(of: tag, with: "")
+        }
+        return n.trimmingCharacters(in: .whitespaces)
+    }
 }

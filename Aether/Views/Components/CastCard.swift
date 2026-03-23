@@ -38,8 +38,8 @@ struct CastCard: View {
 
             // Name
             Text(person.name ?? "Unknown")
-                .font(.system(size: AetherTheme.captionSize, weight: .medium))
-                .foregroundColor(isFocused ? .white : AetherTheme.textPrimary)
+                .font(.system(size: LumaTheme.captionSize, weight: .medium))
+                .foregroundColor(isFocused ? .white : LumaTheme.textPrimary)
                 .lineLimit(1)
                 .multilineTextAlignment(.center)
 
@@ -47,7 +47,7 @@ struct CastCard: View {
             if let role = person.role, !role.isEmpty {
                 Text(role)
                     .font(.system(size: 20, weight: .regular))
-                    .foregroundColor(AetherTheme.textTertiary)
+                    .foregroundColor(LumaTheme.textTertiary)
                     .lineLimit(1)
                     .multilineTextAlignment(.center)
             }
@@ -70,11 +70,11 @@ struct CastCard: View {
 
     private var initialsPlaceholder: some View {
         Circle()
-            .fill(AetherTheme.cardSurface)
+            .fill(LumaTheme.cardSurface)
             .overlay {
                 Text(initials)
                     .font(.system(size: 38, weight: .semibold))
-                    .foregroundColor(AetherTheme.textTertiary)
+                    .foregroundColor(LumaTheme.textTertiary)
             }
     }
 

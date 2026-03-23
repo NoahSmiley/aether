@@ -17,7 +17,7 @@ struct EpisodeRow: View {
         Button {
             onSelect?()
         } label: {
-            HStack(alignment: .top, spacing: AetherTheme.spacingLG) {
+            HStack(alignment: .top, spacing: LumaTheme.spacingLG) {
                 // Thumbnail with play overlay
                 ZStack {
                     LazyImage(url: thumbnailURL) { state in
@@ -74,7 +74,7 @@ struct EpisodeRow: View {
                         // Title
                         Text(item.name ?? "Unknown Episode")
                             .font(.system(size: 27, weight: .semibold))
-                            .foregroundColor(isFocused ? .white : AetherTheme.textPrimary)
+                            .foregroundColor(isFocused ? .white : LumaTheme.textPrimary)
                             .lineLimit(1)
 
                         Spacer()
@@ -82,16 +82,16 @@ struct EpisodeRow: View {
                         // Duration
                         if let ticks = item.runTimeTicks {
                             Text(ticks.asDuration)
-                                .font(.system(size: AetherTheme.captionSize))
-                                .foregroundColor(AetherTheme.textTertiary)
+                                .font(.system(size: LumaTheme.captionSize))
+                                .foregroundColor(LumaTheme.textTertiary)
                         }
                     }
 
                     // Synopsis preview
                     if let overview = item.overview, !overview.isEmpty {
                         Text(overview)
-                            .font(.system(size: AetherTheme.captionSize))
-                            .foregroundColor(AetherTheme.textSecondary)
+                            .font(.system(size: LumaTheme.captionSize))
+                            .foregroundColor(LumaTheme.textSecondary)
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -103,20 +103,20 @@ struct EpisodeRow: View {
                         HStack(spacing: 6) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 18))
-                                .foregroundColor(AetherTheme.accent)
+                                .foregroundColor(LumaTheme.accent)
                             Text("Watched")
                                 .font(.system(size: 20))
-                                .foregroundColor(AetherTheme.textTertiary)
+                                .foregroundColor(LumaTheme.textTertiary)
                         }
                     } else if let progress = item.userData?.progressPercent, progress > 0 {
-                        ProgressBar(progress: progress, height: 3, accentColor: AetherTheme.accent)
+                        ProgressBar(progress: progress, height: 3, accentColor: LumaTheme.accent)
                             .frame(maxWidth: 200)
                     }
                 }
                 .padding(.vertical, 6)
             }
-            .padding(.horizontal, AetherTheme.spacingLG)
-            .padding(.vertical, AetherTheme.spacingMD)
+            .padding(.horizontal, LumaTheme.spacingLG)
+            .padding(.vertical, LumaTheme.spacingMD)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(isFocused ? Color.white.opacity(0.08) : Color.clear)
@@ -130,11 +130,11 @@ struct EpisodeRow: View {
 
     private var thumbnailPlaceholder: some View {
         Rectangle()
-            .fill(AetherTheme.cardSurface)
+            .fill(LumaTheme.cardSurface)
             .overlay {
                 Image(systemName: "play.rectangle")
                     .font(.system(size: 30))
-                    .foregroundColor(AetherTheme.textTertiary)
+                    .foregroundColor(LumaTheme.textTertiary)
             }
     }
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum AetherTheme {
+enum LumaTheme {
     // Colors
     static let background = Color("Background", bundle: nil)
     static let surface = Color("Surface", bundle: nil)
@@ -51,7 +51,7 @@ enum AetherTheme {
     static let heroTitleSize: CGFloat = 64
 }
 
-enum AetherConfig {
+enum LumaConfig {
     static let pageSize = 50
     static let progressReportInterval: TimeInterval = 10
     static let searchDebounceInterval: TimeInterval = 0.5

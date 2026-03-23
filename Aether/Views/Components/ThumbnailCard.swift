@@ -23,8 +23,8 @@ struct ThumbnailCard: View {
                         placeholder
                     }
                 }
-                .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
-                .clipShape(RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius))
+                .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
+                .clipShape(RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius))
 
                 // Bottom gradient overlay with episode info
                 VStack(spacing: 0) {
@@ -60,7 +60,7 @@ struct ThumbnailCard: View {
                         .padding(.bottom, 10)
                     }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius))
+                .clipShape(RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius))
 
                 // Thin accent-colored progress bar at the very bottom
                 if let progress = item.userData?.progressPercent, progress > 0, progress < 1 {
@@ -71,7 +71,7 @@ struct ThumbnailCard: View {
                                 Rectangle()
                                     .fill(Color.white.opacity(0.15))
                                 Rectangle()
-                                    .fill(AetherTheme.accent)
+                                    .fill(LumaTheme.accent)
                                     .frame(width: geo.size.width * min(max(progress, 0), 1))
                             }
                         }
@@ -80,38 +80,38 @@ struct ThumbnailCard: View {
                     .clipShape(
                         UnevenRoundedRectangle(
                             topLeadingRadius: 0,
-                            bottomLeadingRadius: AetherTheme.cardCornerRadius,
-                            bottomTrailingRadius: AetherTheme.cardCornerRadius,
+                            bottomLeadingRadius: LumaTheme.cardCornerRadius,
+                            bottomTrailingRadius: LumaTheme.cardCornerRadius,
                             topTrailingRadius: 0
                         )
                     )
                 }
             }
-            .frame(width: AetherTheme.thumbnailWidth, height: AetherTheme.thumbnailHeight)
+            .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
 
             // Show title below card only on focus for non-episode items
             if isFocused, item.type != .episode {
                 Text(item.name ?? "Unknown")
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundColor(AetherTheme.textPrimary)
+                    .foregroundColor(LumaTheme.textPrimary)
                     .lineLimit(1)
                     .padding(.top, 8)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .frame(width: AetherTheme.thumbnailWidth)
-        .aetherFocusStyle(isFocused: isFocused)
+        .frame(width: LumaTheme.thumbnailWidth)
+        .lumaFocusStyle(isFocused: isFocused)
     }
 
     // MARK: - Private
 
     private var placeholder: some View {
-        RoundedRectangle(cornerRadius: AetherTheme.cardCornerRadius)
-            .fill(AetherTheme.cardSurface)
+        RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius)
+            .fill(LumaTheme.cardSurface)
             .overlay {
                 Image(systemName: "play.rectangle")
                     .font(.system(size: 36))
-                    .foregroundColor(AetherTheme.textTertiary)
+                    .foregroundColor(LumaTheme.textTertiary)
             }
     }
 
@@ -131,21 +131,21 @@ struct ThumbnailCard: View {
         if let tag = item.imageTags?["Thumb"] {
             return ImageURLBuilder.thumbURL(
                 itemId: item.id,
-                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                maxWidth: Int(LumaTheme.thumbnailWidth * 2),
                 tag: tag
             )
         }
         if let tags = item.backdropImageTags, let tag = tags.first {
             return ImageURLBuilder.backdropURL(
                 itemId: item.id,
-                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                maxWidth: Int(LumaTheme.thumbnailWidth * 2),
                 tag: tag
             )
         }
         if let tag = item.imageTags?["Primary"] {
             return ImageURLBuilder.posterURL(
                 itemId: item.id,
-                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                maxWidth: Int(LumaTheme.thumbnailWidth * 2),
                 tag: tag
             )
         }
@@ -154,7 +154,7 @@ struct ThumbnailCard: View {
            let tags = item.parentBackdropImageTags, let tag = tags.first {
             return ImageURLBuilder.backdropURL(
                 itemId: seriesId,
-                maxWidth: Int(AetherTheme.thumbnailWidth * 2),
+                maxWidth: Int(LumaTheme.thumbnailWidth * 2),
                 tag: tag
             )
         }

@@ -50,36 +50,36 @@ struct LoginView: View {
 
                 // Server info header
                 if let info = viewModel.serverInfo {
-                    HStack(spacing: AetherTheme.spacingSM) {
+                    HStack(spacing: LumaTheme.spacingSM) {
                         Circle()
                             .fill(Color.green.opacity(0.7))
                             .frame(width: 8, height: 8)
 
                         Text(info.serverName)
-                            .font(.system(size: AetherTheme.captionSize, weight: .medium))
+                            .font(.system(size: LumaTheme.captionSize, weight: .medium))
                             .foregroundStyle(Color.white.opacity(0.5))
                     }
                     .offset(y: headerOffset)
-                    .padding(.bottom, AetherTheme.spacingLG)
+                    .padding(.bottom, LumaTheme.spacingLG)
                 }
 
                 // Logo + Title
                 Image("LogoWhite")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 80, height: 80)
-                    .padding(.bottom, AetherTheme.spacingMD)
+                    .frame(width: 50, height: 50)
+                    .padding(.bottom, LumaTheme.spacingMD)
 
                 Text("Sign In")
-                    .font(.system(size: AetherTheme.titleSize, weight: .bold))
+                    .font(.system(size: LumaTheme.titleSize, weight: .bold))
                     .foregroundStyle(.white)
                     .tracking(1)
-                    .padding(.bottom, AetherTheme.spacingXXL)
+                    .padding(.bottom, LumaTheme.spacingXXL)
 
                 // Login form
-                VStack(spacing: AetherTheme.spacingLG) {
+                VStack(spacing: LumaTheme.spacingLG) {
                     // Username
-                    VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
+                    VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
                         if focusedField == .username || !viewModel.username.isEmpty {
                             Text("Username")
                                 .font(.system(size: 20, weight: .medium))
@@ -93,9 +93,9 @@ struct LoginView: View {
 
                         TextField("Username", text: $viewModel.username)
                             .textFieldStyle(.plain)
-                            .font(.system(size: AetherTheme.bodySize, weight: .regular))
+                            .font(.system(size: LumaTheme.bodySize, weight: .regular))
                             .foregroundStyle(.white)
-                            .padding(.horizontal, AetherTheme.spacingLG)
+                            .padding(.horizontal, LumaTheme.spacingLG)
                             .padding(.vertical, 22)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
@@ -119,7 +119,7 @@ struct LoginView: View {
                     }
 
                     // Password
-                    VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
+                    VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
                         if focusedField == .password || !viewModel.password.isEmpty {
                             Text("Password")
                                 .font(.system(size: 20, weight: .medium))
@@ -133,9 +133,9 @@ struct LoginView: View {
 
                         SecureField("Password", text: $viewModel.password)
                             .textFieldStyle(.plain)
-                            .font(.system(size: AetherTheme.bodySize, weight: .regular))
+                            .font(.system(size: LumaTheme.bodySize, weight: .regular))
                             .foregroundStyle(.white)
-                            .padding(.horizontal, AetherTheme.spacingLG)
+                            .padding(.horizontal, LumaTheme.spacingLG)
                             .padding(.vertical, 22)
                             .background(
                                 RoundedRectangle(cornerRadius: 16)
@@ -160,15 +160,15 @@ struct LoginView: View {
 
                     // Error display
                     if let error = viewModel.error {
-                        HStack(spacing: AetherTheme.spacingSM) {
+                        HStack(spacing: LumaTheme.spacingSM) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .font(.system(size: 18))
                             Text(error)
                                 .multilineTextAlignment(.center)
                         }
-                        .font(.system(size: AetherTheme.captionSize, weight: .regular))
+                        .font(.system(size: LumaTheme.captionSize, weight: .regular))
                         .foregroundStyle(Color(red: 0.95, green: 0.3, blue: 0.3).opacity(0.85))
-                        .padding(.vertical, AetherTheme.spacingSM)
+                        .padding(.vertical, LumaTheme.spacingSM)
                         .transition(.opacity.combined(with: .move(edge: .top)))
                     }
 
@@ -176,14 +176,14 @@ struct LoginView: View {
                     Button {
                         Task { await viewModel.login() }
                     } label: {
-                        HStack(spacing: AetherTheme.spacingSM) {
+                        HStack(spacing: LumaTheme.spacingSM) {
                             if viewModel.isLoggingIn {
                                 ProgressView()
                                     .tint(.white)
                                     .scaleEffect(0.9)
                             }
                             Text("Sign In")
-                                .font(.system(size: AetherTheme.bodySize, weight: .bold))
+                                .font(.system(size: LumaTheme.bodySize, weight: .bold))
                                 .tracking(1)
                         }
                         .frame(maxWidth: 320)
@@ -213,13 +213,13 @@ struct LoginView: View {
                     .focused($isSignInFocused)
                     .disabled(viewModel.isLoggingIn || viewModel.username.isEmpty || viewModel.password.isEmpty)
                     .opacity((viewModel.username.isEmpty || viewModel.password.isEmpty) ? 0.5 : 1.0)
-                    .padding(.top, AetherTheme.spacingSM)
+                    .padding(.top, LumaTheme.spacingSM)
                 }
                 .frame(maxWidth: 550)
                 .offset(y: formOffset)
 
                 Spacer()
-                    .frame(height: AetherTheme.spacingXXL)
+                    .frame(height: LumaTheme.spacingXXL)
 
                 // Change Server
                 Button {
@@ -231,11 +231,11 @@ struct LoginView: View {
                         viewModel.password = ""
                     }
                 } label: {
-                    HStack(spacing: AetherTheme.spacingSM) {
+                    HStack(spacing: LumaTheme.spacingSM) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 18, weight: .medium))
                         Text("Change Server")
-                            .font(.system(size: AetherTheme.captionSize, weight: .regular))
+                            .font(.system(size: LumaTheme.captionSize, weight: .regular))
                     }
                     .foregroundStyle(
                         isChangeServerFocused
@@ -250,7 +250,7 @@ struct LoginView: View {
 
                 Spacer()
             }
-            .padding(.horizontal, AetherTheme.spacingHuge)
+            .padding(.horizontal, LumaTheme.spacingHuge)
             .opacity(contentOpacity)
         }
         .onAppear {

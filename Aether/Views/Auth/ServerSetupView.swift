@@ -48,15 +48,15 @@ struct ServerSetupView: View {
                 Spacer()
 
                 // Branding
-                VStack(spacing: AetherTheme.spacingLG) {
+                VStack(spacing: LumaTheme.spacingLG) {
                     Image("LogoWhite")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 120, height: 120)
+                        .frame(width: 70, height: 70)
                         .shadow(color: accentViolet.opacity(0.4), radius: glowPulse ? 30 : 15, x: 0, y: 0)
                         .opacity(titleOpacity)
 
-                    Text("AETHER")
+                    Text("LUMA")
                         .font(.system(size: 48, weight: .bold, design: .default))
                         .tracking(14)
                         .foregroundStyle(
@@ -69,21 +69,21 @@ struct ServerSetupView: View {
                         .opacity(titleOpacity)
 
                     Text("Stream your media library")
-                        .font(.system(size: AetherTheme.bodySize, weight: .light))
+                        .font(.system(size: LumaTheme.bodySize, weight: .light))
                         .foregroundStyle(Color.white.opacity(0.45))
                         .tracking(2)
                         .opacity(subtitleOpacity)
                 }
-                .padding(.bottom, AetherTheme.spacingXXL)
+                .padding(.bottom, LumaTheme.spacingXXL)
 
                 // Connection form
-                VStack(spacing: AetherTheme.spacingLG) {
+                VStack(spacing: LumaTheme.spacingLG) {
                     // Server URL field
                     TextField("https://your-server.com", text: $viewModel.serverURL)
                         .textFieldStyle(.plain)
-                        .font(.system(size: AetherTheme.bodySize, weight: .regular))
+                        .font(.system(size: LumaTheme.bodySize, weight: .regular))
                         .foregroundStyle(.white)
-                        .padding(.horizontal, AetherTheme.spacingLG)
+                        .padding(.horizontal, LumaTheme.spacingLG)
                         .padding(.vertical, 22)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
@@ -106,7 +106,7 @@ struct ServerSetupView: View {
                         #if DEBUG
                         .onAppear {
                             if viewModel.serverURL.isEmpty {
-                                viewModel.serverURL = "http://192.168.0.159:8096"
+                                viewModel.serverURL = "https://jellyfin.athion.me"
                             }
                         }
                         #endif
@@ -115,14 +115,14 @@ struct ServerSetupView: View {
                     Button {
                         Task { await viewModel.connectToServer() }
                     } label: {
-                        HStack(spacing: AetherTheme.spacingSM) {
+                        HStack(spacing: LumaTheme.spacingSM) {
                             if viewModel.isConnecting {
                                 ProgressView()
                                     .tint(.white)
                                     .scaleEffect(0.9)
                             }
                             Text("Connect")
-                                .font(.system(size: AetherTheme.bodySize, weight: .bold))
+                                .font(.system(size: LumaTheme.bodySize, weight: .bold))
                                 .tracking(1)
                         }
                         .frame(maxWidth: 320)
@@ -156,19 +156,19 @@ struct ServerSetupView: View {
                 .opacity(formOpacity)
 
                 // Status area
-                VStack(spacing: AetherTheme.spacingSM) {
+                VStack(spacing: LumaTheme.spacingSM) {
                     if viewModel.isConnecting {
-                        HStack(spacing: AetherTheme.spacingSM) {
+                        HStack(spacing: LumaTheme.spacingSM) {
                             ProgressView()
                                 .tint(Color.white.opacity(0.6))
                                 .scaleEffect(0.8)
                             Text("Connecting...")
-                                .font(.system(size: AetherTheme.captionSize, weight: .regular))
+                                .font(.system(size: LumaTheme.captionSize, weight: .regular))
                                 .foregroundStyle(Color.white.opacity(0.5))
                         }
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                     } else if showSuccess, let info = viewModel.serverInfo {
-                        HStack(spacing: AetherTheme.spacingMD) {
+                        HStack(spacing: LumaTheme.spacingMD) {
                             ZStack {
                                 Circle()
                                     .fill(Color.green.opacity(0.15))
@@ -183,22 +183,22 @@ struct ServerSetupView: View {
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(info.serverName)
-                                    .font(.system(size: AetherTheme.bodySize, weight: .medium))
+                                    .font(.system(size: LumaTheme.bodySize, weight: .medium))
                                     .foregroundStyle(.white)
                                 Text("v\(info.version)")
-                                    .font(.system(size: AetherTheme.captionSize, weight: .light))
+                                    .font(.system(size: LumaTheme.captionSize, weight: .light))
                                     .foregroundStyle(Color.white.opacity(0.4))
                             }
                         }
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                     } else if let error = viewModel.error {
-                        HStack(spacing: AetherTheme.spacingSM) {
+                        HStack(spacing: LumaTheme.spacingSM) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .font(.system(size: 20))
                                 .foregroundStyle(Color(red: 0.95, green: 0.3, blue: 0.3).opacity(0.8))
 
                             Text(error)
-                                .font(.system(size: AetherTheme.captionSize, weight: .regular))
+                                .font(.system(size: LumaTheme.captionSize, weight: .regular))
                                 .foregroundStyle(Color(red: 0.95, green: 0.3, blue: 0.3).opacity(0.8))
                                 .multilineTextAlignment(.center)
                         }
@@ -206,13 +206,13 @@ struct ServerSetupView: View {
                     }
                 }
                 .frame(height: 60)
-                .padding(.top, AetherTheme.spacingXL)
+                .padding(.top, LumaTheme.spacingXL)
                 .animation(.easeInOut(duration: 0.35), value: viewModel.isConnecting)
                 .animation(.easeInOut(duration: 0.35), value: viewModel.error)
 
                 Spacer()
             }
-            .padding(.horizontal, AetherTheme.spacingHuge)
+            .padding(.horizontal, LumaTheme.spacingHuge)
         }
         .onAppear {
             // Staggered entrance animation

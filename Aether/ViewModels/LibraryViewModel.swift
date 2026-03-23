@@ -34,7 +34,7 @@ class LibraryViewModel {
                 includeTypes: includeTypes,
                 sortBy: sortBy,
                 sortOrder: sortOrder,
-                limit: AetherConfig.pageSize,
+                limit: LumaConfig.pageSize,
                 startIndex: 0,
                 genres: selectedGenre
             )
@@ -62,7 +62,7 @@ class LibraryViewModel {
                 includeTypes: includeTypes,
                 sortBy: sortBy,
                 sortOrder: sortOrder,
-                limit: AetherConfig.pageSize,
+                limit: LumaConfig.pageSize,
                 startIndex: startIndex,
                 genres: selectedGenre
             )

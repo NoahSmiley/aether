@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="moonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#c0c0e0" stop-opacity="0.85"/>
+    </linearGradient>
+    <radialGradient id="innerGlow" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Crescent moon -->
+  <g filter="url(#glow)">
+    <path d="M280 56c-12 0-24 1-36 3 60 30 101 92 101 164s-41 134-101 164c12 2 24 3 36 3 97 0 176-79 176-176S377 56 280 56z"
+          fill="url(#moonGlow)"/>
+    <path d="M280 56c-12 0-24 1-36 3 60 30 101 92 101 164s-41 134-101 164c12 2 24 3 36 3 97 0 176-79 176-176S377 56 280 56z"
+          fill="url(#innerGlow)"/>
+  </g>
+</svg>

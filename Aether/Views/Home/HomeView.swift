@@ -17,7 +17,7 @@ struct HomeView: View {
                     contentView
                 }
             }
-            .background(AetherTheme.deepBlack.ignoresSafeArea())
+            .background(LumaTheme.deepBlack.ignoresSafeArea())
             .navigationDestination(for: String.self) { itemId in
                 DetailView(itemId: itemId)
             }
@@ -44,11 +44,11 @@ struct HomeView: View {
                     Image("LogoWhite")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 60, height: 60)
+                        .frame(width: 35, height: 35)
                         .opacity(0.85)
                     Spacer()
                 }
-                .padding(.bottom, AetherTheme.spacingMD)
+                .padding(.bottom, LumaTheme.spacingMD)
 
                 // Continue Watching
                 if !viewModel.continueWatching.isEmpty {
@@ -57,7 +57,7 @@ struct HomeView: View {
                         items: viewModel.continueWatching,
                         style: .thumbnail
                     )
-                    .padding(.bottom, AetherTheme.spacingXXL)
+                    .padding(.bottom, LumaTheme.spacingXXL)
                 }
 
                 // Next Up
@@ -67,19 +67,21 @@ struct HomeView: View {
                         items: viewModel.nextUp,
                         style: .thumbnail
                     )
-                    .padding(.bottom, AetherTheme.spacingXXL)
+                    .padding(.bottom, LumaTheme.spacingXXL)
                 }
 
-                // Live Sports
-                if !liveTVViewModel.sportsPrograms.isEmpty {
-                    homeLiveTVRow(title: "Live Sports & NFL", items: liveTVViewModel.sportsPrograms)
-                        .padding(.bottom, AetherTheme.spacingXXL)
-                }
-
-                // Live Now
-                if !liveTVViewModel.nowAiring.isEmpty {
-                    homeLiveTVRow(title: "Live Now", items: liveTVViewModel.nowAiring)
-                        .padding(.bottom, AetherTheme.spacingXXL)
+                // Live TV — single highlights row on home
+                if liveTVViewModel.isLoading {
+                    SkeletonRow()
+                        .padding(.bottom, LumaTheme.spacingXXL)
+                } else {
+                    let allLive = liveTVViewModel.nflChannels
+                        + liveTVViewModel.golfChannels
+                        + liveTVViewModel.sportsChannels
+                    if !allLive.isEmpty {
+                        homeLiveTVRow(title: "Live TV", channels: allLive)
+                            .padding(.bottom, LumaTheme.spacingXXL)
+                    }
                 }
 
                 // Recently Added
@@ -89,7 +91,7 @@ struct HomeView: View {
                         items: viewModel.recentlyAdded,
                         style: .poster
                     )
-                    .padding(.bottom, AetherTheme.spacingXXL)
+                    .padding(.bottom, LumaTheme.spacingXXL)
                 }
 
                 // Library rows
@@ -100,12 +102,12 @@ struct HomeView: View {
                             items: items,
                             style: .poster
                         )
-                        .padding(.bottom, AetherTheme.spacingXXL)
+                        .padding(.bottom, LumaTheme.spacingXXL)
                     }
                 }
 
                 Spacer()
-                    .frame(height: AetherTheme.spacingHuge)
+                    .frame(height: LumaTheme.spacingHuge)
             }
         }
         .ignoresSafeArea(edges: [.horizontal, .top])
@@ -115,10 +117,10 @@ struct HomeView: View {
 
     @ViewBuilder
     private func homeMediaRow(title: String, items: [BaseItemDto], style: HomeRowStyle) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
             Text(title)
                 .font(.system(size: 32, weight: .bold))
-                .foregroundStyle(AetherTheme.textPrimary)
+                .foregroundStyle(LumaTheme.textPrimary)
                 .padding(.leading, 50)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -137,7 +139,7 @@ struct HomeView: View {
                 }
                 .padding(.leading, 50)
                 .padding(.trailing, 60)
-                .padding(.vertical, AetherTheme.spacingLG)
+                .padding(.vertical, LumaTheme.spacingLG)
             }
             .scrollClipDisabled()
         }
@@ -146,22 +148,22 @@ struct HomeView: View {
     // MARK: - Live TV Rows
 
     @ViewBuilder
-    private func homeLiveTVRow(title: String, items: [MockProgram]) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingSM) {
+    private func homeLiveTVRow(title: String, channels: [LiveChannel]) -> some View {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingSM) {
             Text(title)
                 .font(.system(size: 32, weight: .bold))
-                .foregroundStyle(AetherTheme.textPrimary)
+                .foregroundStyle(LumaTheme.textPrimary)
                 .padding(.leading, 50)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 25) {
-                    ForEach(items) { program in
-                        ProgramCard(program: program)
+                    ForEach(channels) { channel in
+                        LiveChannelCard(channel: channel, viewModel: liveTVViewModel)
                     }
                 }
                 .padding(.leading, 50)
                 .padding(.trailing, 60)
-                .padding(.vertical, AetherTheme.spacingLG)
+                .padding(.vertical, LumaTheme.spacingLG)
             }
             .scrollClipDisabled()
         }
@@ -170,18 +172,18 @@ struct HomeView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: AetherTheme.spacingXL) {
+        VStack(spacing: LumaTheme.spacingXL) {
             Spacer()
             Image(systemName: "film.stack")
                 .font(.system(size: 80, weight: .thin))
-                .foregroundColor(AetherTheme.textTertiary)
-            VStack(spacing: AetherTheme.spacingMD) {
+                .foregroundColor(LumaTheme.textTertiary)
+            VStack(spacing: LumaTheme.spacingMD) {
                 Text("Your library is empty")
-                    .font(.system(size: AetherTheme.titleSize, weight: .bold))
-                    .foregroundColor(AetherTheme.textPrimary)
+                    .font(.system(size: LumaTheme.titleSize, weight: .bold))
+                    .foregroundColor(LumaTheme.textPrimary)
                 Text("Add movies and shows to your Jellyfin server to see them here.")
-                    .font(.system(size: AetherTheme.bodySize, weight: .regular))
-                    .foregroundColor(AetherTheme.textSecondary)
+                    .font(.system(size: LumaTheme.bodySize, weight: .regular))
+                    .foregroundColor(LumaTheme.textSecondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: 600)
             }
@@ -193,14 +195,10 @@ struct HomeView: View {
     // MARK: - Loading State
 
     private var loadingState: some View {
-        VStack {
-            Spacer()
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(AetherTheme.textSecondary)
-            Spacer()
+        ScrollView(.vertical, showsIndicators: false) {
+            SkeletonHomeView()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea(edges: [.horizontal, .top])
     }
 
     // MARK: - Helpers

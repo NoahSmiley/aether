@@ -14,11 +14,11 @@ struct MediaRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingMD) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingMD) {
             // Section title
             Text(title)
                 .font(.system(size: 28, weight: .bold))
-                .foregroundColor(AetherTheme.textPrimary)
+                .foregroundColor(LumaTheme.textPrimary)
                 .padding(.leading, 80)
 
             // Horizontal scroll of cards
@@ -40,7 +40,7 @@ struct MediaRow: View {
                 }
                 .padding(.leading, 90)
                 .padding(.trailing, 60)
-                .padding(.vertical, AetherTheme.spacingLG)
+                .padding(.vertical, LumaTheme.spacingLG)
             }
             .scrollClipDisabled()
         }

@@ -6,7 +6,7 @@ struct SearchView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: AetherTheme.spacingXL) {
+            LazyVStack(alignment: .leading, spacing: LumaTheme.spacingXL) {
                 if viewModel.query.isEmpty {
                     emptyState
                 } else if viewModel.isSearching && viewModel.movies.isEmpty && viewModel.shows.isEmpty && viewModel.episodes.isEmpty {
@@ -18,7 +18,7 @@ struct SearchView: View {
                 }
             }
         }
-        .background(AetherTheme.deepBlack)
+        .background(LumaTheme.deepBlack)
         .searchable(text: $viewModel.query, prompt: "Search movies, shows, episodes...")
         .navigationTitle("Search")
         .navigationDestination(for: String.self) { itemId in
@@ -29,7 +29,7 @@ struct SearchView: View {
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: AetherTheme.spacingLG) {
+        VStack(spacing: LumaTheme.spacingLG) {
             // Large magnifying glass icon
             ZStack {
                 Circle()
@@ -38,16 +38,16 @@ struct SearchView: View {
 
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 56, weight: .light))
-                    .foregroundStyle(AetherTheme.textTertiary)
+                    .foregroundStyle(LumaTheme.textTertiary)
             }
 
             Text("Search your library")
-                .font(.system(size: AetherTheme.headlineSize, weight: .semibold))
-                .foregroundStyle(AetherTheme.textPrimary)
+                .font(.system(size: LumaTheme.headlineSize, weight: .semibold))
+                .foregroundStyle(LumaTheme.textPrimary)
 
             Text("Find movies, TV shows, and episodes")
-                .font(.system(size: AetherTheme.captionSize))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .font(.system(size: LumaTheme.captionSize))
+                .foregroundStyle(LumaTheme.textTertiary)
         }
         .frame(maxWidth: .infinity, minHeight: 500)
     }
@@ -55,13 +55,13 @@ struct SearchView: View {
     // MARK: - Loading State
 
     private var loadingState: some View {
-        VStack(spacing: AetherTheme.spacingMD) {
+        VStack(spacing: LumaTheme.spacingMD) {
             ProgressView()
                 .tint(.white)
                 .scaleEffect(1.3)
             Text("Searching...")
-                .font(.system(size: AetherTheme.captionSize))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .font(.system(size: LumaTheme.captionSize))
+                .foregroundStyle(LumaTheme.textTertiary)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
     }
@@ -69,16 +69,16 @@ struct SearchView: View {
     // MARK: - No Results
 
     private var noResults: some View {
-        VStack(spacing: AetherTheme.spacingMD) {
+        VStack(spacing: LumaTheme.spacingMD) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .foregroundStyle(LumaTheme.textTertiary)
             Text("No results for \"\(viewModel.query)\"")
-                .font(.system(size: AetherTheme.bodySize))
-                .foregroundStyle(AetherTheme.textSecondary)
+                .font(.system(size: LumaTheme.bodySize))
+                .foregroundStyle(LumaTheme.textSecondary)
             Text("Try a different search term")
-                .font(.system(size: AetherTheme.captionSize))
-                .foregroundStyle(AetherTheme.textTertiary)
+                .font(.system(size: LumaTheme.captionSize))
+                .foregroundStyle(LumaTheme.textTertiary)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
     }
@@ -106,16 +106,16 @@ struct SearchView: View {
 
     @ViewBuilder
     private func resultRow(title: String, items: [BaseItemDto], style: SearchRowStyle) -> some View {
-        VStack(alignment: .leading, spacing: AetherTheme.spacingMD) {
+        VStack(alignment: .leading, spacing: LumaTheme.spacingMD) {
             // Section title with count
-            HStack(spacing: AetherTheme.spacingSM) {
+            HStack(spacing: LumaTheme.spacingSM) {
                 Text(title)
                     .font(.system(size: 31, weight: .semibold))
-                    .foregroundStyle(AetherTheme.textPrimary)
+                    .foregroundStyle(LumaTheme.textPrimary)
 
                 Text("\(items.count)")
-                    .font(.system(size: AetherTheme.captionSize, weight: .medium))
-                    .foregroundStyle(AetherTheme.textTertiary)
+                    .font(.system(size: LumaTheme.captionSize, weight: .medium))
+                    .foregroundStyle(LumaTheme.textTertiary)
             }
             .padding(.leading, 80)
 
@@ -135,7 +135,7 @@ struct SearchView: View {
                 }
                 .padding(.leading, 80)
                 .padding(.trailing, 40)
-                .padding(.vertical, AetherTheme.spacingXL)
+                .padding(.vertical, LumaTheme.spacingXL)
             }
             .scrollClipDisabled()
         }

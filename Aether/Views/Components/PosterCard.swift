@@ -18,7 +18,7 @@ struct PosterCard: View {
                 placeholder
             }
         }
-        .frame(width: AetherTheme.posterWidth, height: AetherTheme.posterHeight)
+        .frame(width: LumaTheme.posterWidth, height: LumaTheme.posterHeight)
         .clipped()
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
@@ -33,7 +33,7 @@ struct PosterCard: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
-                    .background(AetherTheme.accent)
+                    .background(LumaTheme.accent)
                     .clipShape(Capsule())
                     .padding(6)
             }
@@ -75,7 +75,7 @@ struct PosterCard: View {
     private var posterURL: URL? {
         ImageURLBuilder.posterURL(
             itemId: item.id,
-            maxWidth: Int(AetherTheme.posterWidth * 2),
+            maxWidth: Int(LumaTheme.posterWidth * 2),
             tag: item.imageTags?["Primary"]
         )
     }
