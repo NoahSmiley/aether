@@ -365,7 +365,7 @@
 				AE8E23B420EF0D11D90F0D5E /* NukeUI */,
 				065074C66B0B478E8D3A2308 /* KeychainAccess */,
 			);
-			productName = Aether;
+			productName = Luma;
 			productReference = AF079DE4E9E495EEF6637D03 /* Aether.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -546,7 +546,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.athion.aether;
+				PRODUCT_BUNDLE_IDENTIFIER = me.athion.luma;
 				SDKROOT = appletvos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -569,7 +569,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.athion.aether;
+				PRODUCT_BUNDLE_IDENTIFIER = me.athion.luma;
 				SDKROOT = appletvos;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				TARGETED_DEVICE_FAMILY = 3;

@@ -531,7 +531,7 @@ actor JellyfinAPI {
         return components?.url
     }
 
-    func streamURL(itemId: String, mediaSourceId: String, startTicks: Int64? = nil) -> URL? {
+    func streamURL(itemId: String, mediaSourceId: String, sourceContainer: String? = nil, startTicks: Int64? = nil) -> URL? {
         guard let baseURL else { return nil }
 
         // Use local URL for streaming if available (much faster than tunnel)
@@ -543,15 +543,40 @@ actor JellyfinAPI {
             streamBase = baseURL
         }
 
-        // Direct stream — Jellyfin remuxes MKV to MP4 without re-encoding video
-        var components = URLComponents(url: streamBase, resolvingAgainstBaseURL: false)
-        components?.path = "/Videos/\(itemId)/stream"
+        let container = sourceContainer?.lowercased() ?? ""
+        let isNativeContainer = (container == "mp4" || container == "mov")
 
-        var queryItems = [
-            URLQueryItem(name: "Static", value: "true"),
-            URLQueryItem(name: "MediaSourceId", value: mediaSourceId),
-            URLQueryItem(name: "api_key", value: accessToken)
-        ]
+        var components = URLComponents(url: streamBase, resolvingAgainstBaseURL: false)
+        var queryItems: [URLQueryItem]
+
+        if isNativeContainer {
+            // Already MP4/MOV — direct play, no processing needed
+            components?.path = "/Videos/\(itemId)/stream.mp4"
+            queryItems = [
+                URLQueryItem(name: "Static", value: "true"),
+                URLQueryItem(name: "MediaSourceId", value: mediaSourceId),
+                URLQueryItem(name: "api_key", value: accessToken)
+            ]
+        } else {
+            // MKV/etc → HLS with remux (no re-encoding). Jellyfin segments the
+            // file into fMP4 chunks that AVPlayer streams natively, preserving
+            // full 4K, Dolby Vision, and Atmos.
+            // MaxStreamingBitrate must be high enough so Jellyfin copies streams
+            // instead of re-encoding at a lower bitrate.
+            components?.path = "/Videos/\(itemId)/master.m3u8"
+            queryItems = [
+                URLQueryItem(name: "MediaSourceId", value: mediaSourceId),
+                URLQueryItem(name: "VideoCodec", value: "hevc,h264"),
+                URLQueryItem(name: "AudioCodec", value: "eac3,ac3,aac"),
+                URLQueryItem(name: "Container", value: "mp4,ts"),
+                URLQueryItem(name: "SegmentContainer", value: "mp4"),
+                URLQueryItem(name: "SegmentLength", value: "6"),
+                URLQueryItem(name: "TranscodingMaxAudioChannels", value: "8"),
+                URLQueryItem(name: "MaxStreamingBitrate", value: "200000000"),
+                URLQueryItem(name: "VideoBitrate", value: "200000000"),
+                URLQueryItem(name: "api_key", value: accessToken)
+            ]
+        }
 
         if let startTicks {
             queryItems.append(URLQueryItem(name: "StartTimeTicks", value: "\(startTicks)"))

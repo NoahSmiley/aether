@@ -33,14 +33,18 @@ class PlayerViewModel {
             let mediaSource = item.mediaSources?.first
             mediaSourceId = mediaSource?.id ?? item.id
 
+            let sourceContainer = mediaSource?.container
+
             streamURL = await api.streamURL(
                 itemId: item.id,
-                mediaSourceId: mediaSourceId ?? item.id
+                mediaSourceId: mediaSourceId ?? item.id,
+                sourceContainer: sourceContainer
             )
 
             #if DEBUG
             print("[Player] Stream URL: \(streamURL?.absoluteString ?? "nil")")
             print("[Player] MediaSource ID: \(mediaSourceId ?? "nil")")
+            print("[Player] Source container: \(sourceContainer ?? "nil")")
             print("[Player] Has mediaSources: \(item.mediaSources?.count ?? 0)")
             #endif
 
@@ -118,7 +122,27 @@ class PlayerViewModel {
             print("[Player] Status: \(avPlayer.status.rawValue), timeControl: \(avPlayer.timeControlStatus.rawValue)")
             print("[Player] Item status: \(avPlayer.currentItem?.status.rawValue ?? -1)")
             if let error = avPlayer.currentItem?.error {
-                print("[Player] Item error: \(error.localizedDescription)")
+                let nsError = error as NSError
+                print("[Player] Item error: \(nsError.localizedDescription)")
+                print("[Player] Error domain: \(nsError.domain), code: \(nsError.code)")
+                print("[Player] Error userInfo: \(nsError.userInfo)")
+                if let underlying = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+                    print("[Player] Underlying error: \(underlying.domain) \(underlying.code) - \(underlying.localizedDescription)")
+                    print("[Player] Underlying userInfo: \(underlying.userInfo)")
+                }
+            }
+
+            // Also check the asset
+            if let asset = avPlayer.currentItem?.asset {
+                do {
+                    let tracks = try await asset.loadTracks(withMediaType: .video)
+                    for track in tracks {
+                        let desc = try await track.load(.formatDescriptions)
+                        print("[Player] Video track format: \(desc)")
+                    }
+                } catch {
+                    print("[Player] Failed to load asset tracks: \(error)")
+                }
             }
         }
         #endif

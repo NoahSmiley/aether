@@ -218,8 +218,13 @@ struct HomeView: View {
             guard let collectionType = library.collectionType,
                   collectionType == "movies" || collectionType == "tvshows" else { continue }
             do {
-                let items = try await api.getLatestItems(parentId: library.id, limit: 20)
-                libraryItems[library.id] = items
+                let result = try await api.getItems(
+                    parentId: library.id,
+                    sortBy: "SortName",
+                    sortOrder: "Ascending",
+                    limit: 50
+                )
+                libraryItems[library.id] = result.items
             } catch {
                 // Non-critical; skip this library
             }
