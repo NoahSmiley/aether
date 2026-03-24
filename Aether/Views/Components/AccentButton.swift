@@ -9,11 +9,11 @@ struct AccentButton: View {
     var style: Style = .primary
     var action: () -> Void
 
-    @Environment(\.isFocused) private var isFocused
+    @FocusState private var isFocused: Bool
 
     enum Style {
-        case primary    // White filled, black text — the main CTA
-        case secondary  // Semi-transparent, white border — secondary actions
+        case primary
+        case secondary
     }
 
     var body: some View {
@@ -38,9 +38,9 @@ struct AccentButton: View {
                 }
             }
         }
-        .buttonStyle(.plain)
-        .scaleEffect(isFocused ? 1.06 : 1.0)
-        .brightness(isFocused ? 0.1 : 0)
+        .buttonStyle(NoChromeFocusStyle())
+        .focused($isFocused)
+        .scaleEffect(isFocused ? 1.08 : 1.0)
         .shadow(
             color: shadowColor,
             radius: isFocused ? 16 : 0,
@@ -49,14 +49,10 @@ struct AccentButton: View {
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFocused)
     }
 
-    // MARK: - Private
-
     private var foregroundColor: Color {
         switch style {
-        case .primary:
-            return .black
-        case .secondary:
-            return .white
+        case .primary: return .black
+        case .secondary: return .white
         }
     }
 
@@ -64,20 +60,20 @@ struct AccentButton: View {
     private var backgroundView: some View {
         switch style {
         case .primary:
-            Color.white
+            Color.white.opacity(isFocused ? 1.0 : 0.85)
         case .secondary:
-            Color.white.opacity(isFocused ? 0.2 : 0.1)
+            Color.white.opacity(isFocused ? 0.25 : 0.1)
         }
     }
 
     private var borderColor: Color {
-        Color.white.opacity(isFocused ? 0.6 : 0.3)
+        Color.white.opacity(isFocused ? 0.7 : 0.3)
     }
 
     private var shadowColor: Color {
         switch style {
         case .primary:
-            return Color.white.opacity(isFocused ? 0.3 : 0)
+            return Color.white.opacity(isFocused ? 0.4 : 0)
         case .secondary:
             return Color.black.opacity(isFocused ? 0.4 : 0)
         }

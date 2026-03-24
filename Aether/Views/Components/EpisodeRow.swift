@@ -8,10 +8,10 @@ struct EpisodeRow: View {
     let item: BaseItemDto
     var onSelect: (() -> Void)? = nil
 
-    @Environment(\.isFocused) private var isFocused
-
     private let thumbWidth: CGFloat = 300
     private let thumbHeight: CGFloat = 169 // 16:9
+
+    @FocusState private var buttonFocused: Bool
 
     var body: some View {
         Button {
@@ -33,7 +33,7 @@ struct EpisodeRow: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     // Play icon overlay on focus
-                    if isFocused {
+                    if buttonFocused {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.black.opacity(0.4))
                             .frame(width: thumbWidth, height: thumbHeight)
@@ -74,7 +74,7 @@ struct EpisodeRow: View {
                         // Title
                         Text(item.name ?? "Unknown Episode")
                             .font(.system(size: 27, weight: .semibold))
-                            .foregroundColor(isFocused ? .white : LumaTheme.textPrimary)
+                            .foregroundColor(buttonFocused ? .white : LumaTheme.textPrimary)
                             .lineLimit(1)
 
                         Spacer()
@@ -119,11 +119,13 @@ struct EpisodeRow: View {
             .padding(.vertical, LumaTheme.spacingMD)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isFocused ? Color.white.opacity(0.08) : Color.clear)
+                    .fill(buttonFocused ? Color.white.opacity(0.12) : Color.white.opacity(0.03))
             )
-            .animation(.easeOut(duration: 0.2), value: isFocused)
+            .scaleEffect(buttonFocused ? 1.02 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: buttonFocused)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(NoChromeFocusStyle())
+        .focused($buttonFocused)
     }
 
     // MARK: - Private
@@ -138,7 +140,6 @@ struct EpisodeRow: View {
             }
     }
 
-    /// Prefer the episode's own Primary image (episode still), then fall back to parent backdrop.
     private var thumbnailURL: URL? {
         if let tag = item.imageTags?["Primary"] {
             return ImageURLBuilder.posterURL(
@@ -165,3 +166,4 @@ struct EpisodeRow: View {
         return nil
     }
 }
+

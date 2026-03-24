@@ -26,39 +26,18 @@ struct ThumbnailCard: View {
                 .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
                 .clipShape(RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius))
 
-                // Bottom gradient overlay with episode info
+                // Bottom gradient overlay (visual only, no text)
                 VStack(spacing: 0) {
                     Spacer()
-
-                    ZStack(alignment: .bottomLeading) {
-                        // Gradient scrim
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0.0),
-                                .init(color: .black.opacity(0.85), location: 1.0)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 80)
-
-                        // Episode / title info overlaid on gradient
-                        VStack(alignment: .leading, spacing: 2) {
-                            if item.type == .episode, let seriesName = item.seriesName {
-                                Text(seriesName)
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .lineLimit(1)
-                            }
-
-                            Text(titleText)
-                                .font(.system(size: 18, weight: .regular))
-                                .foregroundColor(Color.white.opacity(0.8))
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 10)
-                    }
+                    LinearGradient(
+                        stops: [
+                            .init(color: .clear, location: 0.0),
+                            .init(color: .black.opacity(0.7), location: 1.0)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 60)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: LumaTheme.cardCornerRadius))
 
@@ -89,15 +68,26 @@ struct ThumbnailCard: View {
             }
             .frame(width: LumaTheme.thumbnailWidth, height: LumaTheme.thumbnailHeight)
 
-            // Show title below card only on focus for non-episode items
-            if isFocused, item.type != .episode {
-                Text(item.name ?? "Unknown")
-                    .font(.system(size: 22, weight: .medium))
-                    .foregroundColor(LumaTheme.textPrimary)
-                    .lineLimit(1)
-                    .padding(.top, 8)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+            // Title and episode info below the card
+            VStack(alignment: .leading, spacing: 3) {
+                if item.type == .episode, let seriesName = item.seriesName {
+                    Text(seriesName)
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(LumaTheme.textPrimary)
+                        .lineLimit(1)
+                    Text(titleText)
+                        .font(.system(size: 17, weight: .regular))
+                        .foregroundColor(LumaTheme.textSecondary)
+                        .lineLimit(1)
+                } else {
+                    Text(item.name ?? "Unknown")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(LumaTheme.textPrimary)
+                        .lineLimit(1)
+                }
             }
+            .padding(.top, 8)
+            .frame(width: LumaTheme.thumbnailWidth, alignment: .leading)
         }
         .frame(width: LumaTheme.thumbnailWidth)
         .lumaFocusStyle(isFocused: isFocused)

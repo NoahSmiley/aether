@@ -5,18 +5,17 @@ struct DetailView: View {
     @State private var viewModel = MediaDetailViewModel()
 
     var body: some View {
-        Group {
+        ZStack {
+            LumaTheme.deepBlack.ignoresSafeArea()
+
             if viewModel.isLoading {
-                ZStack {
-                    LumaTheme.deepBlack.ignoresSafeArea()
-                    VStack(spacing: LumaTheme.spacingMD) {
-                        ProgressView()
-                            .tint(.white)
-                            .scaleEffect(1.5)
-                        Text("Loading...")
-                            .font(.system(size: LumaTheme.captionSize))
-                            .foregroundStyle(LumaTheme.textTertiary)
-                    }
+                VStack(spacing: LumaTheme.spacingMD) {
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                    Text("Loading...")
+                        .font(.system(size: LumaTheme.captionSize))
+                        .foregroundStyle(LumaTheme.textTertiary)
                 }
             } else if let item = viewModel.item {
                 switch item.type {
@@ -25,22 +24,32 @@ struct DetailView: View {
                 default:
                     MovieDetailView(item: item, viewModel: viewModel)
                 }
-            } else if let error = viewModel.error {
-                ZStack {
-                    LumaTheme.deepBlack.ignoresSafeArea()
-                    VStack(spacing: LumaTheme.spacingMD) {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.system(size: 48))
-                            .foregroundStyle(LumaTheme.textTertiary)
-                        Text(error)
-                            .font(.system(size: LumaTheme.bodySize))
-                            .foregroundStyle(LumaTheme.textSecondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 80)
-                    }
+            } else {
+                VStack(spacing: LumaTheme.spacingMD) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 48))
+                        .foregroundStyle(LumaTheme.textTertiary)
+                    Text(viewModel.error ?? "Unable to load")
+                        .font(.system(size: LumaTheme.bodySize))
+                        .foregroundStyle(LumaTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 80)
+                    #if DEBUG
+                    Text("Item ID: \(itemId)")
+                        .font(.system(size: 16))
+                        .foregroundStyle(LumaTheme.textTertiary)
+                    #endif
                 }
             }
         }
-        .task { await viewModel.loadItem(id: itemId) }
+        .task {
+            #if DEBUG
+            print("[DetailView] Loading item: \(itemId)")
+            #endif
+            await viewModel.loadItem(id: itemId)
+            #if DEBUG
+            print("[DetailView] Result - item: \(viewModel.item?.name ?? "nil"), error: \(viewModel.error ?? "nil")")
+            #endif
+        }
     }
 }

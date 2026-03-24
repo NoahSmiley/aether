@@ -13,6 +13,7 @@ struct MovieDetailView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 // Full-bleed backdrop header (65% of screen)
                 headerSection
+                    .focusable()
 
                 // Content below the hero
                 VStack(alignment: .leading, spacing: LumaTheme.spacingXL) {
@@ -29,18 +30,13 @@ struct MovieDetailView: View {
                         genrePills(genres)
                     }
 
-                    // Cast & Crew
-                    if let people = item.people, !people.isEmpty {
-                        castSection(people: people)
-                    }
-
                     // More Like This
                     if !viewModel.similarItems.isEmpty {
                         moreLikeThisSection
                     }
                 }
                 .padding(.top, LumaTheme.spacingLG)
-                .padding(.bottom, LumaTheme.spacingHuge)
+                .padding(.bottom, 200)
             }
         }
         .background(LumaTheme.deepBlack)
@@ -216,7 +212,7 @@ struct MovieDetailView: View {
                         Circle().stroke(Color.white.opacity(0.12), lineWidth: 1)
                     )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(NoChromeFocusStyle())
         }
         .padding(.horizontal, 80)
     }
@@ -248,7 +244,7 @@ struct MovieDetailView: View {
                         .font(.system(size: LumaTheme.captionSize, weight: .semibold))
                         .foregroundStyle(.white)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(NoChromeFocusStyle())
             }
         }
         .padding(.horizontal, 80)

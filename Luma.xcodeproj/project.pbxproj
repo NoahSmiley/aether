@@ -50,6 +50,7 @@
 		A63D1688E12CFD1BAF91B0C7 /* LiveStreamPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D841E6BBD230E8BE0A5D3765 /* LiveStreamPlayerView.swift */; };
 		A8DFAEDF15D791A09E09A047 /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC00BFBE85AB25E1F1B6413A /* ProgressBar.swift */; };
 		ADD93C97A255E91B46EB49F7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = FD6438C15145567D6103ACD2 /* NukeUI */; };
+		B0B112A2B564210D30161FA3 /* DarkFocusButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB767D86FE3489780A8CD27 /* DarkFocusButtonStyle.swift */; };
 		B2D70B65194BE0ECB0142840 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13F5C55A81D75C9785FD7F37 /* User.swift */; };
 		B9029DADA28A456D9CF794D4 /* MediaDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5FE26F4BB0754D5EB44925 /* MediaDetailViewModel.swift */; };
 		B96ABDBCA2DDDBF58DC66CED /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246211689CA8C5F7066B0DC8 /* DetailView.swift */; };
@@ -96,6 +97,7 @@
 		87582832A5796108184A4FC3 /* HeroBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroBanner.swift; sourceTree = "<group>"; };
 		8D0B1AF6DB227E04C8E0904C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8DC92541ED075B7C8A59C47C /* QueryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryResult.swift; sourceTree = "<group>"; };
+		8EB767D86FE3489780A8CD27 /* DarkFocusButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkFocusButtonStyle.swift; sourceTree = "<group>"; };
 		950BEF4AE388CDBBD5BCA9DB /* XtreamAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XtreamAPI.swift; sourceTree = "<group>"; };
 		97D885C838E1E9E4D854E733 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		A71CF8C744F820B93ADD3809 /* LiveTVView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVView.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				67487602F9A7F59CCD11AE83 /* Constants.swift */,
+				8EB767D86FE3489780A8CD27 /* DarkFocusButtonStyle.swift */,
 				E9A311DC1C45AC44EA01B5B6 /* ImageURLBuilder.swift */,
 				521E474741FC5B2F3B1A4520 /* KeychainHelper.swift */,
 				9467307F60A33CD60E1667E5 /* Extensions */,
@@ -386,6 +389,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					B107032876C77D5D2B314D40 = {
+						DevelopmentTeam = 8656625Z2P;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = DEFB5A06B29D6BCD602A2291 /* Build configuration list for PBXProject "Luma" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -435,6 +444,7 @@
 				20EA63E2027BFCDA1F934487 /* CastCard.swift in Sources */,
 				08DD723075446D77B8903054 /* Constants.swift in Sources */,
 				DDDF3BB7BF8EC44425A34757 /* ContentView.swift in Sources */,
+				B0B112A2B564210D30161FA3 /* DarkFocusButtonStyle.swift in Sources */,
 				B96ABDBCA2DDDBF58DC66CED /* DetailView.swift in Sources */,
 				A0274D4484CC5ED8601F464D /* Double+Ticks.swift in Sources */,
 				7B7FB9F843AD4593902BC90F /* EpisodeRow.swift in Sources */,
@@ -491,8 +501,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8656625Z2P;
 				INFOPLIST_FILE = Aether/Info.plist;
 				JELLYFIN_BASE_URL = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -512,8 +524,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_ALLOWED = YES;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8656625Z2P;
 				INFOPLIST_FILE = Aether/Info.plist;
 				JELLYFIN_BASE_URL = "http://192.168.0.159:8096";
 				LD_RUNPATH_SEARCH_PATHS = (
