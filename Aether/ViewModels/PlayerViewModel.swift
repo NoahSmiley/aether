@@ -19,7 +19,7 @@ class PlayerViewModel {
     private var timeObserverToken: Any?
     private var currentItem: BaseItemDto?
     private var mediaSourceId: String?
-    private var streamURL: URL?
+    var streamURL: URL?
     private var playSessionId: String = UUID().uuidString
 
     func prepareToPlay(item: BaseItemDto) async {
@@ -37,6 +37,12 @@ class PlayerViewModel {
                 itemId: item.id,
                 mediaSourceId: mediaSourceId ?? item.id
             )
+
+            #if DEBUG
+            print("[Player] Stream URL: \(streamURL?.absoluteString ?? "nil")")
+            print("[Player] MediaSource ID: \(mediaSourceId ?? "nil")")
+            print("[Player] Has mediaSources: \(item.mediaSources?.count ?? 0)")
+            #endif
 
             // Determine duration from the item
             if let ticks = item.runTimeTicks {
@@ -91,8 +97,31 @@ class PlayerViewModel {
             r.start(itemId: currentItem.id, mediaSourceId: mediaSourceId, positionTicks: startTicks)
         }
 
+        // Observe for errors
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemFailedToPlayToEndTime,
+            object: playerItem,
+            queue: .main
+        ) { notification in
+            if let error = notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error {
+                print("[Player] Playback error: \(error.localizedDescription)")
+            }
+        }
+
         avPlayer.play()
         isPlaying = true
+
+        #if DEBUG
+        // Log player status after a delay
+        Task {
+            try? await Task.sleep(for: .seconds(3))
+            print("[Player] Status: \(avPlayer.status.rawValue), timeControl: \(avPlayer.timeControlStatus.rawValue)")
+            print("[Player] Item status: \(avPlayer.currentItem?.status.rawValue ?? -1)")
+            if let error = avPlayer.currentItem?.error {
+                print("[Player] Item error: \(error.localizedDescription)")
+            }
+        }
+        #endif
     }
 
     func stop() {

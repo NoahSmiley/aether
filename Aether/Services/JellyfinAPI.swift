@@ -324,7 +324,7 @@ actor JellyfinAPI {
         ]
         if let limit { query["Limit"] = "\(limit)" }
 
-        return try await get(path: "/Items/Resume", query: query)
+        return try await get(path: "/Users/\(userId)/Items/Resume", query: query)
     }
 
     func getNextUp(limit: Int? = nil) async throws -> QueryResult<BaseItemDto> {
@@ -534,15 +534,22 @@ actor JellyfinAPI {
     func streamURL(itemId: String, mediaSourceId: String, startTicks: Int64? = nil) -> URL? {
         guard let baseURL else { return nil }
 
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-        components?.path = "/Videos/\(itemId)/\(mediaSourceId)/master.m3u8"
+        // Use local URL for streaming if available (much faster than tunnel)
+        let streamBase: URL
+        if let localURL = URL(string: "http://192.168.0.159:8096"),
+           baseURL.host?.contains("athion.me") == true {
+            streamBase = localURL
+        } else {
+            streamBase = baseURL
+        }
+
+        // Direct stream — Jellyfin remuxes MKV to MP4 without re-encoding video
+        var components = URLComponents(url: streamBase, resolvingAgainstBaseURL: false)
+        components?.path = "/Videos/\(itemId)/stream"
 
         var queryItems = [
+            URLQueryItem(name: "Static", value: "true"),
             URLQueryItem(name: "MediaSourceId", value: mediaSourceId),
-            URLQueryItem(name: "VideoCodec", value: "h264,hevc"),
-            URLQueryItem(name: "AudioCodec", value: "aac,ac3,eac3"),
-            URLQueryItem(name: "MaxStreamingBitrate", value: "120000000"),
-            URLQueryItem(name: "SubtitleMethod", value: "Encode"),
             URLQueryItem(name: "api_key", value: accessToken)
         ]
 
@@ -552,6 +559,13 @@ actor JellyfinAPI {
 
         components?.queryItems = queryItems
         return components?.url
+    }
+
+    /// Convert a 32-char hex ID to dashed UUID format (8-4-4-4-12)
+    private func formatAsDashedUUID(_ id: String) -> String {
+        guard id.count == 32, !id.contains("-") else { return id }
+        let chars = Array(id)
+        return "\(String(chars[0..<8]))-\(String(chars[8..<12]))-\(String(chars[12..<16]))-\(String(chars[16..<20]))-\(String(chars[20..<32]))"
     }
 }
 

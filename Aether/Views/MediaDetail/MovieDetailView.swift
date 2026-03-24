@@ -186,6 +186,9 @@ struct MovieDetailView: View {
         HStack(spacing: LumaTheme.spacingLG) {
             // Play button — white filled, play triangle icon
             AccentButton(title: playButtonTitle, icon: "play.fill", style: .primary) {
+                #if DEBUG
+                print("[MovieDetail] Play tapped for: \(item.name ?? "unknown")")
+                #endif
                 playbackItem = item
             }
 

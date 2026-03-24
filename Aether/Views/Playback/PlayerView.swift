@@ -22,9 +22,34 @@ struct PlayerView: View {
             }
 
             if viewModel.isLoading {
-                ProgressView()
-                    .tint(.white)
-                    .scaleEffect(1.5)
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(1.5)
+                    Text("Loading stream...")
+                        .font(.system(size: 22))
+                        .foregroundColor(.white.opacity(0.6))
+                    #if DEBUG
+                    if let url = viewModel.streamURL {
+                        Text(url.absoluteString)
+                            .font(.system(size: 14))
+                            .foregroundColor(.white.opacity(0.3))
+                            .lineLimit(3)
+                            .padding(.horizontal, 40)
+                    }
+                    #endif
+                }
+            }
+
+            if let error = viewModel.error {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.orange)
+                    Text(error)
+                        .font(.system(size: 22))
+                        .foregroundColor(.white.opacity(0.7))
+                }
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.showResumePrompt)
